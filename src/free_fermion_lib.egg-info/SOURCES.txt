@@ -1,0 +1,30 @@
+LICENSE
+MANIFEST.in
+README.md
+requirements.txt
+setup.py
+Research/0. Combinatorial functions.ipynb
+Research/1. PFO-Algorithm.ipynb
+Research/10. Two-point correlation matrix.ipynb
+Research/11. Covariance matrix.ipynb
+Research/2. Gaussian Distribution_Isseler.ipynb
+Research/3. Gaussian Fermions_Wick.ipynb
+Research/4. Quadratic fermionic operators (FF Generators).ipynb
+Research/5.1 Testing FF rotations.ipynb
+Research/5.2 FF rotation-theory.ipynb
+Research/6. Gaussian States.ipynb
+Research/7. Symplectic diagonalization.ipynb
+Research/8. FF matrix decompositions.ipynb
+Research/9. Covariance matrix element lemma.ipynb
+Research/project_path.py
+src/ff/__init__.py
+src/ff/ff_combinatorics.py
+src/ff/ff_graph_theory.py
+src/ff/ff_lib.py
+src/ff/ff_utils.py
+src/free_fermion_lib.egg-info/PKG-INFO
+src/free_fermion_lib.egg-info/SOURCES.txt
+src/free_fermion_lib.egg-info/dependency_links.txt
+src/free_fermion_lib.egg-info/not-zip-safe
+src/free_fermion_lib.egg-info/requires.txt
+src/free_fermion_lib.egg-info/top_level.txt
