@@ -77,7 +77,7 @@ def jordan_wigner_lowering(n_sites):
             else:
                 a_i = np.kron(a_i, np.eye(2))
 
-        annihilation_operators.append(np.matrix(a_i))
+        annihilation_operators.append(a_i)
 
     return annihilation_operators
 
@@ -116,12 +116,12 @@ def jordan_wigner_majoranas(n_sites):
     majorana_operators = []
     
     for j in range(n_sites):
-        gamma_j = (annihilation_operators[j].H + annihilation_operators[j]) / np.sqrt(2)
+        gamma_j = (annihilation_operators[j].conj().T + annihilation_operators[j]) / np.sqrt(2)
         majorana_operators.append(gamma_j)
 
     for k in range(n_sites):
         gamma_k = (
-            -1j * (annihilation_operators[k] - annihilation_operators[k].H) / np.sqrt(2)
+            -1j * (annihilation_operators[k] - annihilation_operators[k].conj().T) / np.sqrt(2)
         )
         majorana_operators.append(gamma_k)
 

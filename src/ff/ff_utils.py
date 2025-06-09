@@ -62,14 +62,38 @@ def clean(obj, threshold=1e-6):
         #assume that an integer number of decimal places has been requested
         threshold=10**(-threshold)
 
+
     if hasattr(obj, 'real') and hasattr(obj, 'imag'):
         # Handle complex arrays
+
+        #clean the arrays
         real_part = np.where(np.abs(obj.real) < threshold, 0, obj.real)
         imag_part = np.where(np.abs(obj.imag) < threshold, 0, obj.imag)
-        return real_part + 1j * imag_part
+        
+        
+        #reduce to scalars as needed
+        if real_part.size == 1:
+            real_part = real_part.item()
+
+        if imag_part.size == 1:
+            imag_part = imag_part.item()
+        
+        #cast to real if there is no imaginary part      
+        if np.allclose(imag_part,0):
+            #make it real
+            return real_part
+        else:
+            #return the cleaned arrays
+            return real_part + 1j * imag_part
     else:
         # Handle real arrays
-        return np.where(np.abs(obj) < threshold, 0, obj)
+        real_part = np.where(np.abs(obj) < threshold, 0, obj)
+
+        #reduce to scalars
+        if real_part.size == 1:
+            real_part = real_part.item()
+
+        return real_part
 
 
 def formatted_output(obj, precision=6):

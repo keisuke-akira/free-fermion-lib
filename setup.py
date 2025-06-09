@@ -29,7 +29,7 @@ setup(
     description="A comprehensive Python library for free fermion systems",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/your-username/free-fermion-lib",  # Update with actual repository URL
+    url="https://github.com/jdwhitfield/free-fermion-lib",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     classifiers=[
@@ -72,8 +72,8 @@ setup(
         "symplectic",
     ],
     project_urls={
-        "Bug Reports": "https://github.com/your-username/free-fermion-lib/issues",
-        "Source": "https://github.com/your-username/free-fermion-lib",
+        "Bug Reports": "https://github.com/jdwhitfield/free-fermion-lib/issues",
+        "Source": "https://github.com/jdwhitfield/free-fermion-lib",
         "Documentation": "https://free-fermion-lib.readthedocs.io/",
     },
     include_package_data=True,

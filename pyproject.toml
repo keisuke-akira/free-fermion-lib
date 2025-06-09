@@ -57,10 +57,10 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-username/free-fermion-lib"
+Homepage = "https://github.com/jdwhitfield/free-fermion-lib"
 Documentation = "https://free-fermion-lib.readthedocs.io/"
-Repository = "https://github.com/your-username/free-fermion-lib"
-"Bug Reports" = "https://github.com/your-username/free-fermion-lib/issues"
+Repository = "https://github.com/jdwhitfield/free-fermion-lib"
+"Bug Reports" = "https://github.com/jdwhitfield/free-fermion-lib/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -113,9 +113,7 @@ exclude_lines = [
     "raise AssertionError",
     "raise NotImplementedError",
     "if 0:",
-    "if __name__ == .__main__.:",
-    "class .*\bProtocol\):",
-    "@(abc\.)?abstractmethod",
+    "if __name__ == .__main__.:"
 ]
 
 [tool.mypy]
