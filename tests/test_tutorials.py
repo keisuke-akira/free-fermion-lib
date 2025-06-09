@@ -148,23 +148,28 @@ class TestGraphTheoryTutorial:
             is_planar, _ = nx.check_planarity(G)
             assert is_planar, "Generated graph should be planar"
             
-            # Apply pfaffian ordering
-            pfo_matrix = ff.pfo_algorithm(G, verbose=False)
+            # Compute and apply the pfaffian ordering
+            A = nx.adjacency_matrix(G).toarray()
+            pfo = ff.pfo_algorithm(G, verbose=False)
+            pfoA = np.multiply(pfo,A)
+            pfoA = np.triu(pfoA)
+            pfoA = pfoA - pfoA.T 
+            pfoA = np.multiply(pfo,A)
             
             # Find perfect matchings
-            matchings = ff.find_perfect_matchings(G)
+            matchings = ff.find_perfect_matchings_brute(G)
             
             # Compute pfaffian (should equal number of matchings)
-            pf_value = ff.pf(pfo_matrix)
+            pf_value = ff.pf(pfoA)
             
             # Validate results
             assert len(matchings) == int(abs(pf_value)), \
                 "Pfaffian should equal number of perfect matchings"
-            assert pfo_matrix.shape[0] == len(G.nodes()), \
+            assert pfoA.shape[0] == len(G.nodes()), \
                 "PFO matrix should match graph size"
             
             # Verify PFO matrix is skew-symmetric
-            assert np.allclose(pfo_matrix, -pfo_matrix.T), \
+            assert np.allclose(pfoA, -pfoA.T), \
                 "PFO matrix should be skew-symmetric"
     
     @pytest.mark.tutorial
@@ -174,17 +179,24 @@ class TestGraphTheoryTutorial:
         G = nx.cycle_graph(4)
         
         # Find perfect matchings
-        matchings = ff.find_perfect_matchings(G)
+        nmatchings = ff.clean(ff.count_perfect_matchings(G))
         
         # A 4-cycle should have exactly 2 perfect matchings
-        assert len(matchings) == 2, "4-cycle should have 2 perfect matchings"
+        assert nmatchings == 2, "4-cycle should have 2 perfect matchings"
         
-        # Apply PFO algorithm
-        pfo_matrix = ff.pfo_algorithm(G, verbose=False)
-        pf_value = ff.pf(pfo_matrix)
+        # Compute and apply the pfaffian ordering
+        A = nx.adjacency_matrix(G).toarray()
+
+        pfo = ff.pfo_algorithm(G, verbose=False)
+        pfoA = np.multiply(pfo,A)
+        pfoA = np.triu(pfoA)
+        pfoA = pfoA - pfoA.T 
+        pfoA = np.multiply(pfo,A)
+        
+        pf_value = ff.pf(pfoA)
         
         # Verify pfaffian equals number of matchings
-        assert abs(pf_value) == len(matchings), \
+        assert abs(pf_value) == nmatchings, \
             "Pfaffian should equal number of perfect matchings"
     
     @pytest.mark.tutorial
@@ -194,13 +206,22 @@ class TestGraphTheoryTutorial:
         G = nx.cycle_graph(3)
         
         # Should have no perfect matchings
-        matchings = ff.find_perfect_matchings(G)
+        matchings = ff.find_perfect_matchings_brute(G)
         assert len(matchings) == 0, "Triangle should have no perfect matchings"
         
         # PFO algorithm should still work but give pfaffian = 0
-        pfo_matrix = ff.pfo_algorithm(G, verbose=False)
-        pf_value = ff.pf(pfo_matrix)
         
+        # Compute and apply the pfaffian ordering
+        A = nx.adjacency_matrix(G).toarray()
+
+        pfo = ff.pfo_algorithm(G, verbose=False)
+        pfoA = np.multiply(pfo,A)
+        pfoA = np.triu(pfoA)
+        pfoA = pfoA - pfoA.T 
+        pfoA = np.multiply(pfo,A)
+        
+        pf_value = ff.pf(pfoA)
+
         # For odd graphs, pfaffian should be 0
         assert abs(pf_value) < 1e-10, "Pfaffian of odd graph should be 0"
 
@@ -309,7 +330,8 @@ class TestTutorialBestPractices:
         # The Hamiltonian should have the right structure for symplectic diagonalization
         eigenvals, eigenvecs = ff.eigh_sp(H)
         assert ff.is_symp(eigenvecs), "Eigenvectors should be symplectic"
-        assert ff.check_canonical_form(eigenvals), "Eigenvalues should be canonical"
+        # Check that eigenvalues appear as np.block([Sigma, 0], [0,-Sigma])        
+        assert np.allclose(np.diag(eigenvals)[n_sites:], -np.diag(eigenvals)[:n_sites]), "Eigenvalues should appear in +/- pairs"
     
     @pytest.mark.tutorial
     def test_state_normalization_checking(self):

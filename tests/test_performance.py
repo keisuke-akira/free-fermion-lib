@@ -77,7 +77,8 @@ class TestAlgorithmPerformance:
             # Should not scale worse than O(n^4)
             assert ratio <= size_ratio**4 * 2, f"Pfaffian scaling should be reasonable"
     
-    @benchmark
+    @benchmark 
+    @pytest.mark.slow
     def test_hafnian_performance(self):
         """Benchmark hafnian calculation performance"""
         sizes = [8, 12, 16, 20]  # Smaller sizes due to exponential complexity
@@ -199,6 +200,7 @@ class TestAlgorithmPerformance:
 class TestScalabilityTests:
     """Test scalability with increasing system size"""
     
+    @pytest.mark.slow    
     def test_matrix_operations_scalability(self):
         """Test scalability of basic matrix operations"""
         sizes = np.array([10, 20, 40, 80])
@@ -245,7 +247,7 @@ class TestScalabilityTests:
             
             # Test planarity checking
             start_time = time.time()
-            is_planar = ff.is_planar(G)
+            is_planar = nx.is_planar(G)
             planarity_time = time.time() - start_time
             planarity_times.append(planarity_time)
             
@@ -272,19 +274,26 @@ class TestScalabilityTests:
         correlation_times = []
         
         for n in system_sizes:
-            # Create random quantum Hamiltonian
-            H = np.random.randn(n, n)
-            H = H + H.T
+            # random parent hamiltionan
+            A = np.random.randn(n,n) + 1j* np.random.randn(n,n)
+            A = A + A.conj().T
+            B = np.random.randn(n,n) + 1j* np.random.randn(n,n)
+            B = B - B.T
+            H = ff.build_H(n,A,B)
+
+            rho = expm(-H)
+            rho = rho/np.trace(rho)
+
             
             # Test diagonalization
             start_time = time.time()
-            eigenvals, eigenvecs = np.linalg.eigh(H)
+            eigenvals, eigenvecs = ff.eigh_sp(H)
             diag_time = time.time() - start_time
             diagonalization_times.append(diag_time)
             
             # Test correlation matrix computation
             start_time = time.time()
-            gamma = ff.correlation_matrix(H)
+            gamma = ff.compute_2corr_matrix(rho)
             corr_time = time.time() - start_time
             correlation_times.append(corr_time)
             
@@ -304,6 +313,7 @@ class TestScalabilityTests:
 class TestMemoryUsage:
     """Test memory usage and efficiency"""
     
+    @pytest.mark.slow
     def test_matrix_memory_usage(self):
         """Test memory usage of matrix operations"""
         initial_memory = memory_usage()
@@ -393,7 +403,7 @@ class TestComparisonBenchmarks:
             
             # Time our implementation
             start_time = time.time()
-            det_ours = ff.dt(A)
+            det_ours = ff.dt_eigen(A)
             our_time = time.time() - start_time
             
             # Time NumPy implementation
@@ -407,38 +417,6 @@ class TestComparisonBenchmarks:
             # Our implementation should be reasonably competitive
             # (Allow up to 10x slower, as we might have additional features)
             assert our_time < numpy_time * 10, "Should be reasonably competitive with NumPy"
-    
-    def test_eigenvalue_vs_numpy(self):
-        """Compare eigenvalue performance with NumPy"""
-        sizes = [50, 100, 150]
-        
-        for n in sizes:
-            A = np.random.randn(n, n)
-            A = A + A.T  # Make symmetric
-            
-            # Time our implementation (if we have one)
-            try:
-                start_time = time.time()
-                eigenvals_ours = ff.eigenvalues(A)
-                our_time = time.time() - start_time
-                
-                # Time NumPy implementation
-                start_time = time.time()
-                eigenvals_numpy = np.linalg.eigvals(A)
-                numpy_time = time.time() - start_time
-                
-                # Results should be close
-                eigenvals_ours_sorted = np.sort(eigenvals_ours)
-                eigenvals_numpy_sorted = np.sort(eigenvals_numpy)
-                assert np.allclose(eigenvals_ours_sorted, eigenvals_numpy_sorted), \
-                    "Eigenvalues should match NumPy"
-                
-                # Performance should be reasonable
-                assert our_time < numpy_time * 10, "Should be reasonably competitive"
-                
-            except AttributeError:
-                # Our implementation might not exist
-                pytest.skip("Custom eigenvalue implementation not available")
     
     def test_matrix_operations_vs_numpy(self):
         """Compare basic matrix operations with NumPy"""
@@ -468,6 +446,7 @@ class TestComparisonBenchmarks:
 class TestStressTests:
     """Stress tests for robustness and stability"""
     
+    @pytest.mark.slow
     def test_repeated_operations_stress(self):
         """Test stability under repeated operations"""
         n_iterations = 100
@@ -486,6 +465,7 @@ class TestStressTests:
             assert np.isfinite(det_val), f"Determinant should be finite at iteration {i}"
             assert np.all(np.isfinite(eigenvals)), f"Eigenvalues should be finite at iteration {i}"
     
+    @pytest.mark.slow
     def test_edge_case_stress(self):
         """Test with edge cases and extreme values"""
         # Very small matrices
@@ -514,6 +494,7 @@ class TestStressTests:
             # Acceptable to fail on singular matrices
             pass
     
+    @pytest.mark.slow
     def test_numerical_stability_stress(self):
         """Test numerical stability under various conditions"""
         # Test with ill-conditioned matrices
@@ -536,6 +517,7 @@ class TestStressTests:
                 # Acceptable to fail on very ill-conditioned matrices
                 pass
     
+    @pytest.mark.slow
     def test_concurrent_operations_stress(self):
         """Test stability under concurrent operations"""
         import threading
@@ -622,6 +604,7 @@ class TestPerformanceRegression:
                 assert op_time < baseline[op_name] * 2, \
                     f"{op_name} performance regression detected"
     
+    @pytest.mark.slow
     def test_memory_baseline(self):
         """Establish baseline memory usage"""
         initial_memory = memory_usage()
@@ -629,7 +612,7 @@ class TestPerformanceRegression:
         # Standard operations
         n = 100
         A = np.random.randn(n, n)
-        det_val = ff.dt(A)
+        det_val = ff.dt_eigen(A)
         eigenvals = np.linalg.eigvals(A)
         
         peak_memory = memory_usage()

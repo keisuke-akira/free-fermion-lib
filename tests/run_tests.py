@@ -103,7 +103,7 @@ def run_all_tests(verbose=False, quick=False, parallel=False):
     
     if parallel:
         try:
-            import pytest_xdist
+            import xdist
             args.extend(['-n', 'auto'])
         except ImportError:
             print("Warning: pytest-xdist not available, running sequentially")

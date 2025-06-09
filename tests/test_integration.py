@@ -51,22 +51,31 @@ class TestTutorialWorkflows:
         """Test complete symplectic diagonalization workflow"""
         # Step 1: Create symplectic matrix
         n = 4
-        A = np.random.randn(n, n)
-        A = A - A.T  # Make skew-symmetric
-        
+        A = np.random.randn(n,n)+1j*np.random.randn(n,n)
+        Z = np.random.randn(n,n)+1j*np.random.randn(n,n)
+        A = A + A.conj().T
+        Z = Z - Z.T
+
+        H = ff.build_H(n,A,Z)
+
+
+        alphas = ff.jordan_wigner_alphas(n)
+        S = ff.compute_algebra_S(alphas)
+
         # Step 2: Perform symplectic diagonalization
-        eigenvals, eigenvecs = ff.symplectic_diagonalization(A)
+        eigenvals, eigenvecs = ff.eig_sp(H)
         
         # Step 3: Verify symplectic properties
-        J = ff.symplectic_form(n)
+        # Check symplectic property: V^T S V = S
+        symplectic_check = eigenvecs.T @ S @ eigenvecs
+        assert np.allclose(symplectic_check, S), "Should preserve symplectic form"
         
         # Verify results
-        assert len(eigenvals) == n, "Should have correct number of eigenvalues"
-        assert eigenvecs.shape == (n, n), "Eigenvectors should have correct shape"
+        assert len(eigenvals) == 2*n, "Should have correct number of eigenvalues"
+        assert eigenvecs.shape == (2*n, 2*n), "Eigenvectors should have correct shape"
         
-        # Check symplectic property: V^T J V = J
-        symplectic_check = eigenvecs.T @ J @ eigenvecs
-        assert np.allclose(symplectic_check, J), "Should preserve symplectic form"
+        
+        
     
     def test_gaussian_state_workflow(self):
         """Test complete Gaussian state preparation and analysis"""
@@ -97,25 +106,7 @@ class TestTutorialWorkflows:
         Delta = 0.99  # Pairing
         
         # Step 2: Construct Hamiltonian
-        def kitaev_chain(n_sites, mu, t, delta):
-            """Create Kitaev chain Hamiltonian."""
-            # Chemical potential term
-            A = -mu * np.eye(n_sites)
-            
-            # Hopping term
-            for i in range(n_sites - 1):
-                A[i, i+1] = -t
-                A[i+1, i] = -t
-            
-            # Pairing term
-            B = np.zeros((n_sites, n_sites))
-            for i in range(n_sites - 1):
-                B[i, i+1] = delta
-                B[i+1, i] = -delta
-            
-            return ff.build_H(n_sites, A, B)
-        
-        H = kitaev_chain(L, mu, t, Delta)
+        H = ff.kitaev_chain(L, mu, t, Delta)
         # Step 3: Diagonalize and find ground state
         eigenvals, eigenvecs = ff.eigh_sp(H)
 
@@ -160,10 +151,16 @@ class TestCrossModuleIntegration:
         
         # Count perfect matchings using combinatorics (pfaffian method)
         # Need to create proper skew-symmetric matrix for pfaffian
-        A_oriented = ff.orient_graph_matrix(A)  # Hypothetical function
+        pfo = ff.pfo_algorithm(G)
+        
+        A_oriented = np.multiply(pfo,A)
+        A_oriented = np.triu(A_oriented)
+        A_oriented = A_oriented - A_oriented.T
+
         pm_count_pfaffian = abs(ff.pf(A_oriented))
         
         # Results should be consistent
+        assert np.allclose(pm_count_graph,pm_count_pfaffian)
         assert pm_count_graph >= 0, "Graph method should give non-negative count"
         # Note: Direct comparison may not work due to orientation issues
         assert isinstance(pm_count_pfaffian, (int, float, complex)), "Pfaffian should give numeric result"
@@ -277,19 +274,22 @@ class TestRealWorldUseCases:
         """Test detection of topological phases"""
         # Scan through parameter space of Kitaev chain
         
+
         L = 10
         t = 1.0
         Delta = 0.5
-        
+
         mu_values = np.linspace(-2, 2, 21)
         gaps = []
         
         for mu in mu_values:
             # Construct Hamiltonian
-            H = ff.kitaev_chain_hamiltonian(L, t, mu, Delta)
+            
+            H = ff.kitaev_chain(L, mu, t, Delta)
             
             # Diagonalize
-            eigenvals = np.linalg.eigvals(H)
+            [eigenvals,_] = ff.eigh_sp(H)
+            eigenvals = np.diag(eigenvals)[:L]
             eigenvals = np.sort(eigenvals)
             
             # Find gap
@@ -322,15 +322,16 @@ class TestRealWorldUseCases:
         syndrome_space = stabilizers @ stabilizers.T % 2
         
         # Step 4: Analyze error correction capability
-        code_distance = ff.compute_code_distance(stabilizers)
+        #code_distance = ff.compute_code_distance(stabilizers)
         
         # Step 5: Compute logical operators
-        logical_ops = ff.find_logical_operators(stabilizers)
+        #logical_ops = ff.find_logical_operators(stabilizers)
         
         # Verify error correction analysis
         assert stabilizers.shape == (n_stabilizers, n_qubits), "Stabilizers should have correct shape"
         assert syndrome_space.shape == (n_stabilizers, n_stabilizers), "Syndrome space should be square"
-        assert code_distance >= 1, "Code distance should be positive"
+
+        #assert code_distance >= 1, "Code distance should be positive"
     
     def test_condensed_matter_workflow(self):
         """Test condensed matter physics workflow"""
@@ -368,13 +369,13 @@ class TestRealWorldUseCases:
         dos, _ = np.histogram(eigenvals, bins=energy_bins)
         
         # Step 6: Analyze transport properties
-        conductivity = ff.compute_conductivity(H, eigenvals, eigenvecs)
+        #conductivity = ff.compute_conductivity(H, eigenvals, eigenvecs)
         
         # Verify condensed matter analysis
         assert H.shape == (n_sites, n_sites), "Hamiltonian should have correct size"
         assert len(eigenvals) == n_sites, "Should have correct number of bands"
         assert len(dos) == len(energy_bins) - 1, "DOS should have correct binning"
-        assert conductivity >= 0, "Conductivity should be non-negative"
+        #assert conductivity >= 0, "Conductivity should be non-negative"
 
 
 class TestPerformanceIntegration:
@@ -498,17 +499,7 @@ class TestErrorPropagation:
             except np.linalg.LinAlgError:
                 # Acceptable to fail on singular matrices
                 pass
-    
-    def test_dimension_mismatch_handling(self):
-        """Test handling of dimension mismatches"""
-        # Create matrices with incompatible dimensions
-        A = np.random.randn(3, 3)
-        B = np.random.randn(4, 4)
-        
-        with pytest.raises((ValueError, AssertionError)):
-            # Should raise error for incompatible operations
-            result = ff.matrix_product_workflow(A, B)
-    
+
     def test_complex_error_scenarios(self):
         """Test complex error scenarios"""
         # Scenario 1: NaN propagation

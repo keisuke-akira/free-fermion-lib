@@ -265,6 +265,25 @@ def build_H(n_sites, A, B=None):
     return H
 
 
+def kitaev_chain(n_sites, mu, t, delta):
+            """Create Kitaev chain Hamiltonian."""
+            # Chemical potential term
+            A = -mu * np.eye(n_sites)
+            
+            # Hopping term
+            for i in range(n_sites - 1):
+                A[i, i+1] = -t
+                A[i+1, i] = -t
+            
+            # Pairing term
+            B = np.zeros((n_sites, n_sites))
+            for i in range(n_sites - 1):
+                B[i, i+1] = delta
+                B[i+1, i] = -delta
+            
+            return build_H(n_sites, A, B)
+
+
 def build_Omega(N):
     """
     Build the Omega matrix of dimension 2*N for N sites.
@@ -491,11 +510,11 @@ def build_op(n_sites, R, alphas, verbose=None, direct=False):
     return R_op
 
 
-def compute_cov_matrix(rho, n_sites, alphas=None):
+def compute_cov_matrix(rho, n_sites=None, alphas=None):
     """
-    Calculate the fermionic covariance matrix
+    Calculate the fermionic covariance matrix of rho
 
-    K_ij = Tr[ρ α_i α_j] - Tr[ρ α_j α_i]
+    K_ij = Tr[rho α_i α_j] - Tr[rho α_j α_i]
 
     Args:
         rho: should be a [2**n_sites x 2**n_sites] matrix
@@ -505,6 +524,10 @@ def compute_cov_matrix(rho, n_sites, alphas=None):
     Returns:
         An [2 n_sites x 2 n_sites] covariance matrix
     """
+    if n_sites is None:
+        N = rho.shape[0]
+        n_sites = np.round(np.log2(N))
+
     if alphas is None:
         alphas = jordan_wigner_alphas(n_sites)
 
@@ -522,7 +545,7 @@ def compute_2corr_matrix(rho, n_sites, alphas=None, conjugation=None):
     Calculate the two-point correlation matrix
 
     Γ = ⟨vec α vec α^t⟩
-    Γ_ij = Tr[ρ α_i α_j]
+    Γ_ij = Tr[rho α_i α_j]
 
     By changing the input conjugation parameter, this function also computes
     P = ⟨vec α vec α†⟩ (conjugation == T)

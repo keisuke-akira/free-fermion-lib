@@ -62,6 +62,10 @@ def clean(obj, threshold=1e-6):
         #assume that an integer number of decimal places has been requested
         threshold=10**(-threshold)
 
+    approx_obj = np.round(obj / threshold) * threshold
+    if np.allclose(approx_obj,obj,threshold):
+        obj = approx_obj
+
 
     if hasattr(obj, 'real') and hasattr(obj, 'imag'):
         # Handle complex arrays

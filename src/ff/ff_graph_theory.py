@@ -19,6 +19,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import itertools as it
 import itertools
+from .ff_combinatorics import dt_eigen
+
 
 
 def _draw_labeled_multigraph(G, pos=None, ax=None):
@@ -296,7 +298,7 @@ def dual_graph_H(G, F, T):
     return H
 
 
-def faces(graph, emb):
+def faces(graph, emb=None):
     """
     Return the faces of an embedded graph using the networkx embedding scheme.
     
@@ -321,6 +323,11 @@ def faces(graph, emb):
     minedge = min(edgeset)
     path = [minedge]
     edgeset.discard(minedge)
+
+    if not emb:
+        [is_planar,emb]=nx.check_planarity(graph)
+        if not is_planar:
+            return 0
 
     # Trace faces
     while edgeset:
@@ -439,10 +446,57 @@ def complete_face(pfo, edges, verbose=False):
 
     return pfo
 
-
-def find_perfect_matchings(graph):
+def count_perfect_matchings(graph):
     """
-    Find all perfect matchings in a graph.
+    Find all perfect matchings in a graph. 
+    
+    If planar, this method uses a pfo, otherwise it is computed via brute force
+
+    Args:
+        graph: A NetworkX graph
+
+    Returns:
+        The number of weighted matching for the given graph.
+    """
+    
+    if nx.is_planar(graph):
+        return count_perfect_matchings_planar(graph)
+    else:
+        return len(find_perfect_matchings_brute(graph))
+       
+
+def count_perfect_matchings_planar(graph):
+    """
+    Find all perfect matchings in a planar graph using the PFO algorithm.
+
+    Args:
+        graph: A NetworkX graph
+
+    Returns:
+        The number of weighted matching for the given graph
+    """
+    
+    assert nx.is_planar(graph)
+
+    if len(graph) == 0:
+        return 0; #Trivial case, no non-zero matchings
+
+    A = nx.adjacency_matrix(graph).toarray()
+
+    #run the pfo algorithm
+    pfo = pfo_algorithm(graph)
+
+    #use the pfo ordering to align the hf and pf
+    pfoA = np.multiply(pfo, A)
+    pfoA = np.triu(pfoA)
+    pfoA = pfoA - pfoA.T
+
+    return np.sqrt(dt_eigen(pfoA))
+
+
+def find_perfect_matchings_brute(graph):
+    """
+    Find all perfect matchings in a graph using a brute force enumeration.
 
     Args:
         graph: A NetworkX graph
@@ -453,6 +507,10 @@ def find_perfect_matchings(graph):
     n = len(graph.nodes)
     if n % 2 != 0:
         return []  # No perfect matchings possible for odd number of nodes
+    
+    if n > 15:
+        print("Warning brute force approach too expensive")
+        return []
 
     all_edges = list(graph.edges)
     perfect_matchings = []

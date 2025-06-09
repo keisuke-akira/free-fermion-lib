@@ -160,7 +160,7 @@ class TestIntermediateExamples:
         # Basic statistical properties
         mean_val = np.mean(eigenvals)
         std_val = np.std(eigenvals)
-        
+
         #print("mean particle eigenvalue:",mean_val)
         #print("std of the eigenvalues:",std_val)
 
@@ -236,11 +236,16 @@ class TestAdvancedExamples:
                 return None, None, None
             
             # Method 1: Brute force enumeration
-            matchings_brute = ff.find_perfect_matchings(G)
+            matchings_brute = ff.find_perfect_matchings_brute(G)
             
             # Method 2: Pfaffian calculation
             pfo_matrix = ff.pfo_algorithm(G, verbose=False)
-            pf_value = ff.pf(pfo_matrix)
+            
+            A = nx.adjacency_matrix(G).toarray()
+            pfoA = np.multiply(pfo_matrix , A)
+            pfoA = np.triu(pfoA)
+            pfoA = pfoA - pfoA.T
+            pf_value = ff.pf(pfoA)
             
             return G, matchings_brute, pf_value
         
@@ -415,23 +420,23 @@ class TestExampleEdgeCases:
         """Test graph algorithm edge cases"""
         # Empty graph
         G_empty = nx.Graph()
-        matchings = ff.find_perfect_matchings(G_empty)
+        matchings = ff.find_perfect_matchings_brute(G_empty)
         assert len(matchings) == 1, "Empty graph has one perfect matching (empty)"
         
         # Single node (odd)
         G_single = nx.Graph()
         G_single.add_node(0)
-        matchings = ff.find_perfect_matchings(G_single)
+        matchings = ff.find_perfect_matchings_brute(G_single)
         assert len(matchings) == 0, "Single node has no perfect matching"
         
         # Two disconnected nodes
         G_two = nx.Graph()
         G_two.add_nodes_from([0, 1])
-        matchings = ff.find_perfect_matchings(G_two)
+        matchings = ff.find_perfect_matchings_brute(G_two)
         assert len(matchings) == 0, "Disconnected nodes have no perfect matching"
         
         # Two connected nodes
         G_edge = nx.Graph()
         G_edge.add_edge(0, 1)
-        matchings = ff.find_perfect_matchings(G_edge)
+        matchings = ff.find_perfect_matchings_brute(G_edge)
         assert len(matchings) == 1, "Single edge is one perfect matching"
