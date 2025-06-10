@@ -2,7 +2,8 @@
 Graph Theory and Visualization Functions for Free Fermion Library
 
 This module contains graph theory algorithms and visualization functions,
-particularly focused on planar graphs and the Pfaffian ordering algorithm (FKT algorithm).
+particularly focused on planar graphs and the Pfaffian ordering algorithm
+(FKT algorithm).
 
 Key algorithms:
 - Pfaffian ordering algorithm (FKT algorithm) for planar graphs
@@ -23,15 +24,14 @@ from .ff_combinatorics import dt_eigen
 from .ff_utils import clean
 
 
-
 def _draw_labeled_multigraph(G, pos=None, ax=None):
     """
     Draw a labeled multigraph with curved edges for multiple connections.
-    
-    Length of connectionstyle must be at least that of a maximum number of edges
-    between pair of nodes. This number is maximum one-sided connections
+
+    Length of connectionstyle must be at least that of a maximum number of
+    edges between pair of nodes. This number is maximum one-sided connections
     for directed graph and maximum total connections for undirected graph.
-    
+
     Args:
         G: NetworkX graph object
         pos: Dictionary of node positions (optional)
@@ -66,7 +66,7 @@ def _draw_labeled_multigraph(G, pos=None, ax=None):
 def _draw_labeled_graph(G, pos=None, ax=None):
     """
     Draw a labeled graph using positions (if given).
-    
+
     Args:
         G: NetworkX graph object
         pos: Dictionary of node positions (optional)
@@ -94,7 +94,7 @@ def _draw_labeled_graph(G, pos=None, ax=None):
 def plot_graph_with_edge_weights(A, matching=None, title=None):
     """
     Plot the graph associated with adjacency matrix A with edge weights.
-    
+
     Given a real [n x n] matrix A, interpret the entries as directed edge
     weights, then plot the graph with the edge weights.
 
@@ -160,7 +160,8 @@ def plot_graph_with_edge_weights(A, matching=None, title=None):
 
     if matching is not None:
         # Highlight the matching edges
-        nx.draw_networkx_edges(G, pos, edgelist=matching, edge_color="red", width=2)
+        nx.draw_networkx_edges(G, pos, edgelist=matching,
+                               edge_color="red", width=2)
 
     # title of plot
     if title is not None:
@@ -182,7 +183,7 @@ def generate_random_planar_graph(n, seed=None):
 
     Returns:
         A NetworkX graph object representing the planar graph.
-        Returns None if a planar graph with n nodes cannot be generated 
+        Returns None if a planar graph with n nodes cannot be generated
         within a reasonable number of attempts.
     """
     if seed:
@@ -190,10 +191,8 @@ def generate_random_planar_graph(n, seed=None):
 
     max_attempts = 1000  # Limit the number of attempts to find a planar graph
     for _ in range(max_attempts):
-        G = nx.gnm_random_graph(
-            n, random.randint(n - 1, 2 * n - 3)
-        ) 
-        
+        G = nx.gnm_random_graph(n, random.randint(n - 1, 2 * n - 3))
+
         # Generate a random graph
         if nx.check_planarity(G)[0] and nx.is_connected(G):
             return G
@@ -251,11 +250,12 @@ def plot_planar_embedding(G, pfo=None, title=None):
 def dual_graph_H(G, F, T):
     """
     Create the dual graph according to the PFO algorithm (Vazirani 1987).
-    
-    "Construct a new graph H having one vertex corresponding to each face (
-    including the infinite face) of G. Two vertices u and v of H are
+
+    "Construct a new graph H having one vertex corresponding to each face
+    (including the infinite face) of G. Two vertices u and v of H are
     connected by an edge iff the corresponding faces share an edge not in T.
-    Let r be the vertex in H corresponding to the infinite face of G. Root H at r."
+    Let r be the vertex in H corresponding to the infinite face of G. Root H
+    at r."
 
     Args:
         G: Original planar graph
@@ -304,7 +304,7 @@ def dual_graph_H(G, F, T):
 def faces(graph, emb=None):
     """
     Return the faces of an embedded graph using the networkx embedding scheme.
-    
+
     ADAPTED HEAVILY FROM SAGE:
     https://github.com/sagemath/sage/blob/develop/src/sage/graphs/generic_graph.py#L6815
 
@@ -328,7 +328,7 @@ def faces(graph, emb=None):
     edgeset.discard(minedge)
 
     if not emb:
-        [is_planar,emb]=nx.check_planarity(graph)
+        [is_planar, emb] = nx.check_planarity(graph)
         if not is_planar:
             return 0
 
@@ -389,7 +389,7 @@ def faces(graph, emb=None):
 def complete_face(pfo, edges, verbose=False):
     """
     Update one edge while maintaining the PFO condition.
-    
+
     Args:
         pfo: Pfaffian ordering matrix
         edges: List of edges in the face
@@ -412,7 +412,7 @@ def complete_face(pfo, edges, verbose=False):
         u = min(e[0], e[1])
         v = max(e[0], e[1])
 
-        if np.allclose(np.real(pfo[u, v]),0):
+        if np.allclose(np.real(pfo[u, v]), 0):
             skip_list.append(e)
             continue
 
@@ -449,10 +449,11 @@ def complete_face(pfo, edges, verbose=False):
 
     return pfo
 
+
 def count_perfect_matchings(graph):
     """
-    Find all perfect matchings in a graph. 
-    
+    Find all perfect matchings in a graph.
+
     If planar, this method uses a pfo, otherwise it is computed via brute force
 
     Args:
@@ -461,12 +462,12 @@ def count_perfect_matchings(graph):
     Returns:
         The number of weighted matching for the given graph.
     """
-    
+
     if nx.is_planar(graph):
         return count_perfect_matchings_planar(graph)
     else:
         return len(find_perfect_matchings_brute(graph))
-       
+
 
 def count_perfect_matchings_planar(graph):
     """
@@ -478,23 +479,24 @@ def count_perfect_matchings_planar(graph):
     Returns:
         The number of weighted matching for the given graph
     """
-    
+
     assert nx.is_planar(graph)
 
     if len(graph) == 0:
-        return 0; #Trivial case, no non-zero matchings
+        return 0
+        # Trivial case, no non-zero matchings
 
     A = nx.adjacency_matrix(graph).toarray()
 
-    #run the pfo algorithm
+    # run the pfo algorithm
     pfo = pfo_algorithm(graph)
 
-    #use the pfo ordering to align the hf and pf
+    # use the pfo ordering to align the hf and pf
     pfoA = np.multiply(pfo, A)
     pfoA = np.triu(pfoA)
     pfoA = pfoA - pfoA.T
 
-    return clean(np.sqrt(dt_eigen(pfoA)),10)
+    return clean(np.sqrt(dt_eigen(pfoA)), 10)
 
 
 def find_perfect_matchings_brute(graph):
@@ -510,7 +512,7 @@ def find_perfect_matchings_brute(graph):
     n = len(graph.nodes)
     if n % 2 != 0:
         return []  # No perfect matchings possible for odd number of nodes
-    
+
     if n > 15:
         print("Warning brute force approach too expensive")
         return []
@@ -531,9 +533,9 @@ def find_perfect_matchings_brute(graph):
 def pfo_algorithm(graph, verbose=False):
     """
     Pfaffian ordering algorithm for planar graphs (FKT algorithm).
-    
+
     This algorithm is due to Kasteleyn 1967 by way of Vazirani 1987.
-    
+
     The algorithm constructs a pfaffian ordering of the edges of a planar graph
     such that the pfaffian of the resulting skew-symmetric matrix equals
     the number of perfect matchings in the graph.
@@ -575,7 +577,6 @@ def pfo_algorithm(graph, verbose=False):
     if not nx.is_tree(H):
         print(H)
         assert nx.is_tree(H), "H is not a tree"
-        
 
     # Step 3: Orient edges of T
     for e in T.edges():
@@ -587,17 +588,17 @@ def pfo_algorithm(graph, verbose=False):
     if verbose:
         plot_planar_embedding(graph, np.real(orientation))
 
-    # Step 4: The rooted tree H dictates the order in which the rest of the edges of
-    # G will be oriented. The orientation starts with the faces corresponding to the
-    # leaves of H, and moves up to r.
+    # Step 4: The rooted tree H dictates the order in which the rest of the
+    # edges of G will be oriented. The orientation starts with the faces
+    # corresponding to the leaves of H, and moves up to r.
 
-    # The orientation starts with the faces corresponding to the leaves of H, and
-    # moves up to r. Let e be the edge in G corresponding to the edge (u -> v) in
-    # H (assuming that all edges in H are directed away from the root). Let f be
-    # the face in G corresponding to u. Assume that the faces corresponding to all
-    # descendents of v have already been oriented. Then, e is the only unoriented
-    # edge in f. Now orient e so that f has an odd number of edges oriented
-    # clockwise.
+    # The orientation starts with the faces corresponding to the leaves of H,
+    # and moves up to r. Let e be the edge in G corresponding to the edge
+    # (u -> v) in H (assuming that all edges in H are directed away from the
+    # root). Let f be the face in G corresponding to u. Assume that the faces
+    # corresponding to all descendents of v have already been oriented. Then,
+    # e is the only unoriented edge in f. Now orient e so that f has an odd
+    # number of edges oriented clockwise.
 
     # we ordered the faces such that the last of the faces is the external face
     root = max(H.nodes())
@@ -616,7 +617,8 @@ def pfo_algorithm(graph, verbose=False):
 
             if verbose:
                 plot_planar_embedding(
-                    graph, np.real(orientation), title="Face {}: {}".format(leaf, face)
+                    graph, np.real(orientation),
+                    title="Face {}: {}".format(leaf, face)
                 )
 
     if np.sum(np.sum(np.imag(orientation))) > 1e-16:
@@ -635,20 +637,20 @@ def pfo_algorithm(graph, verbose=False):
 def compute_tree_depth(graph):
     """
     Compute the depth of a tree graph.
-    
+
     Args:
         graph: NetworkX tree graph
-        
+
     Returns:
         Integer representing the maximum depth of the tree
     """
     if not nx.is_tree(graph):
         raise ValueError("Graph must be a tree")
-    
+
     # Choose an arbitrary root (first node)
     root = list(graph.nodes())[0]
-    
+
     # Compute shortest path lengths from root to all nodes
     depths = nx.single_source_shortest_path_length(graph, root)
-    
+
     return max(depths.values())

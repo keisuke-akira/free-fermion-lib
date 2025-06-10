@@ -3,7 +3,8 @@ Free Fermion Library - Basic Functions For Handling Fermions
 
 This module contains the core quantum physics and linear algebra functions
 for free fermion systems, including Jordan-Wigner transformations, symplectic
-diagonalization, Gaussian state constructions, and correlation matrix computations.
+diagonalization, Gaussian state constructions, and correlation matrix
+computations.
 
 Key functionality:
  - Jordan-Wigner fermionic operators (Dirac and Majorana)
@@ -19,6 +20,7 @@ Copyright 2025 James.D.Whitfield@dartmouth.edu
 import numpy as np
 from scipy.linalg import expm, schur
 from .ff_utils import kron_plus, _print
+
 
 def permutation_to_matrix(permutation):
     """
@@ -100,15 +102,15 @@ def jordan_wigner_alphas(n_sites):
 
 
 def jordan_wigner_majoranas(n_sites):
-    """
+    r"""
     Generate a set of Majorana operators under Jordan-Wigner.
 
-    .. math:: 
-      
+    .. math::
+
       \gamma_j = (a_j + a_j^\dagger)/\sqrt{2}, \qquad j < n_{sites}
 
       \gamma_k = i(a_k - a_k^\dagger)/\sqrt{2},\qquad  k < 2n_{sites}
-      
+
 
     Args:
         n_sites: The number of lattice sites
@@ -118,14 +120,18 @@ def jordan_wigner_majoranas(n_sites):
     """
     annihilation_operators = jordan_wigner_lowering(n_sites)
     majorana_operators = []
-    
+
     for j in range(n_sites):
-        gamma_j = (annihilation_operators[j].conj().T + annihilation_operators[j]) / np.sqrt(2)
+        gamma_j = (
+            annihilation_operators[j].conj().T + annihilation_operators[j]
+        ) / np.sqrt(2)
         majorana_operators.append(gamma_j)
 
     for k in range(n_sites):
         gamma_k = (
-            -1j * (annihilation_operators[k] - annihilation_operators[k].conj().T) / np.sqrt(2)
+            -1j
+            * (annihilation_operators[k] - annihilation_operators[k].conj().T)
+            / np.sqrt(2)
         )
         majorana_operators.append(gamma_k)
 
@@ -137,7 +143,7 @@ def rotate_operators(C, alphas, Left=False, verbose=False):
     Transform set of operators using a matrix C per:
 
     .. math:: \beta_j = \sum_i C_{ji} \alpha_i
-        
+
 
     Use Left=True if instead you want
 
@@ -153,7 +159,7 @@ def rotate_operators(C, alphas, Left=False, verbose=False):
         The list of rotated operators
     """
     # check if input is out of order and swap as needed
-    if type(C) == list:
+    if isinstance(C, list):
         (C, alphas) = (alphas, C)
 
     # Validate dimensions
@@ -201,8 +207,19 @@ def _perform_rotation(C, alphas, verbose=False):
 
             if verbose:
                 print(
-                    "b[", j, "] += C[", j, ",", i, "]  alpha_", i,
-                    "= ", np.round(C[j, i], 3), " alpha_", i, "\n",
+                    "b[",
+                    j,
+                    "] += C[",
+                    j,
+                    ",",
+                    i,
+                    "]  alpha_",
+                    i,
+                    "= ",
+                    np.round(C[j, i], 3),
+                    " alpha_",
+                    i,
+                    "\n",
                 )
 
         b_ops.append(b_j)  # save in array
@@ -245,7 +262,7 @@ def build_H(n_sites, A, B=None):
 
     The output is organized as [[-A.conj(), B],
                                 [-B.conj(), A]]
-    
+
     If A = A.conj().T and B = -B.T then the output is compatible with
     alphas = jordan_wigner_alphas(n_sites)
 
@@ -269,36 +286,48 @@ def build_H(n_sites, A, B=None):
     H[N:, N:] = A
     return H
 
+
 def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False):
     """Generate a random free fermion state using a random Hamiltonian.
     Args:
         n_sites: The number of sites
-        fixedN: If True, the generator is fixed to a specific N (default: False)
+        fixedN: If True, generator commutes with N_op (default: False)
         seed: Random seed for reproducibility (optional)
-        returnH: If True, return the generator matrix along with rho (default: False)
+        returnH: If True, return the generator matrix along with
+                          rho (default: False)
     Returns:
-        A normalized free fermion state, rho. If returnH is True, also returns the generator matrix H.
+        A normalized free fermion state, rho. If returnH is True, also returns
+        the generator matrix H.
     """
-    
-    H = random_H_generator(n_sites, fixedN=fixedN, seed=seed)  # Generate a random Hamiltonian
-    H_op = build_op(n_sites, H, jordan_wigner_alphas(n_sites))  # Build the Hamiltonian operator
 
-    rho = expm(-H_op) # Compute the FF state from the Hamiltonian
-    rho = rho/ np.trace(rho)  # Normalize the state density matrix
-    
+    H = random_H_generator(
+        n_sites, fixedN=fixedN, seed=seed
+    )  # Generate a random Hamiltonian
+    H_op = build_op(
+        n_sites, H, jordan_wigner_alphas(n_sites)
+    )  # Build the Hamiltonian operator
+
+    rho = expm(-H_op)  # Compute the FF state from the Hamiltonian
+    rho = rho / np.trace(rho)  # Normalize the state density matrix
+
+    # Return both the normalized state density matrix and the generator matrix
     if returnH:
-        return rho, H  # Return both the normalized state density matrix and the generator matrix
+        return (
+            rho,
+            H,
+        )
     else:
         return rho  # Return the normalized state density matrix
 
-def random_H_generator(n_sites, fixedN= False, seed=None):
+
+def random_H_generator(n_sites, fixedN=False, seed=None):
     """
     Generate a random generator matrix for free fermions. Entries are drawn
     from a standard normal distribution for both real and imaginary parts.
 
     Args:
         n_sites: The number of sites
-        fixedN: If True, the generator is fixed to a specific N (default: False)
+        fixedN: If True, generator will preserve N (default: False)
         seed: Random seed for reproducibility (optional)
 
     Returns:
@@ -307,34 +336,36 @@ def random_H_generator(n_sites, fixedN= False, seed=None):
     if seed is not None:
         np.random.seed(seed)
 
-    A = np.random.randn(n_sites, n_sites) + 1j * np.random.randn(n_sites, n_sites)
-    Z = np.random.randn(n_sites, n_sites) + 1j * np.random.randn(n_sites, n_sites)
-    A = A+ A.conj().T  # make A Hermitian
+    A = np.random.randn(n_sites, n_sites)
+    A += 1j * np.random.randn(n_sites, n_sites)
+    Z = np.random.randn(n_sites, n_sites)
+    Z += 1j * np.random.randn(n_sites, n_sites)
+    A = A + A.conj().T  # make A Hermitian
     Z = Z - Z.T  # make Z skew-symmetric
 
     if fixedN:
-        Z = Z*0  # make Z zero if fixedN is True
+        Z = Z * 0  # make Z zero if fixedN is True
     # Build the generator matrix
     return build_H(n_sites, A, Z)
 
 
 def kitaev_chain(n_sites, mu, t, delta):
-            """Create Kitaev chain Hamiltonian."""
-            # Chemical potential term
-            A = -mu * np.eye(n_sites)
-            
-            # Hopping term
-            for i in range(n_sites - 1):
-                A[i, i+1] = -t
-                A[i+1, i] = -t
-            
-            # Pairing term
-            B = np.zeros((n_sites, n_sites))
-            for i in range(n_sites - 1):
-                B[i, i+1] = delta
-                B[i+1, i] = -delta
-            
-            return build_H(n_sites, A, B)
+    """Create Kitaev chain Hamiltonian."""
+    # Chemical potential term
+    A = -mu * np.eye(n_sites)
+
+    # Hopping term
+    for i in range(n_sites - 1):
+        A[i, i + 1] = -t
+        A[i + 1, i] = -t
+
+    # Pairing term
+    B = np.zeros((n_sites, n_sites))
+    for i in range(n_sites - 1):
+        B[i, i + 1] = delta
+        B[i + 1, i] = -delta
+
+    return build_H(n_sites, A, B)
 
 
 def build_Omega(N):
@@ -363,10 +394,10 @@ def build_reordering_xx_to_xp(n_sites):
     """
     A permutation matrix that transforms ordering
     [x_1, x_2... p_1, p_2...] to [x_1, p_1, x_2, p_2, ...]
-    
+
     Args:
         n_sites: Number of sites
-        
+
     Returns:
         Permutation matrix for reordering
     """
@@ -414,10 +445,10 @@ def is_symp(U):
 
     U = [[ s , t* ]
          [ t , s* ]]
-         
+
     Args:
         U: Matrix to check for symplectic property
-        
+
     Returns:
         True if U is symplectic, False otherwise
     """
@@ -487,7 +518,6 @@ def check_canonical_form(L):
     return True
 
 
-
 def generate_gaussian_state(n_sites, H, alphas=None):
     """
     Generate a Gaussian state using Hamiltonian H.
@@ -514,8 +544,12 @@ def generate_gaussian_state(n_sites, H, alphas=None):
     if H_op is None:
         print(H.shape)
         print(
-            "Invalid Hamiltonian size ", H.shape,
-            "\nShould be dim: ", 2 * n_sites, " or ", 2**n_sites,
+            "Invalid Hamiltonian size ",
+            H.shape,
+            "\nShould be dim: ",
+            2 * n_sites,
+            " or ",
+            2**n_sites,
         )
         return 0
 
@@ -541,7 +575,8 @@ def build_op(n_sites, R, alphas, verbose=None, direct=False):
         The N-body Hamiltonian operator as a matrix
     """
     if R.shape[0] != 2 * n_sites or R.shape[1] != 2 * n_sites:
-        print("Use `build_H(n_sites,A,np.zeros_like(A))` to format input correctly")
+        print("Use `build_H(n_sites,A,np.zeros_like(A))`",
+              "to format input correctly")
 
     # N-body operators
     R_op = np.zeros_like(alphas[0])
@@ -587,10 +622,12 @@ def compute_cov_matrix(rho, n_sites=None, alphas=None):
     Covf = np.zeros((2 * n_sites, 2 * n_sites), dtype=complex)
     for i in range(2 * n_sites):
         for j in range(2 * n_sites):
-            Covf[i, j] = (np.trace(rho @ alphas[i] @ alphas[j])
-            - np.trace(rho @ alphas[j] @ alphas[i]))
+            Covf[i, j] = np.trace(rho @ alphas[i] @ alphas[j]) - np.trace(
+                rho @ alphas[j] @ alphas[i]
+            )
 
     return Covf
+
 
 def correlation_matrix(rho):
     """
@@ -603,15 +640,16 @@ def correlation_matrix(rho):
 
     Args:
         rho: should be a [2**n_sites x 2**n_sites] matrix
-    
+
     Returns:
         An [2 n_sites x 2 n_sites] correlation matrix
     """
     N = rho.shape[0]
     n_sites = int(np.round(np.log2(N)))
     alphas = jordan_wigner_alphas(n_sites)
-    
+
     return compute_2corr_matrix(rho, n_sites, alphas, conjugation=None)
+
 
 def compute_2corr_matrix(rho, n_sites, alphas=None, conjugation=None):
     """
@@ -624,7 +662,7 @@ def compute_2corr_matrix(rho, n_sites, alphas=None, conjugation=None):
     P = ⟨vec α vec α†⟩ (conjugation == T)
     η = ⟨vec α† vec α^t⟩ (conjugation < 0)
 
-    By default the operators are not conjugated but if 
+    By default the operators are not conjugated but if
     `conjugation` is True or positive:
                             P_ij = Tr[ρ α_i α_j†]
     And if `conjugation` is negative:
@@ -712,15 +750,15 @@ def compute_algebra_S(alphas, verbose=False):
 def is_matchgate(M, verbose=False):
     """
     Check the matchgate condition for 4x4 input matrices.
-    
+
     A 4x4 matrix satisfies the matchgate condition if the determinant
     of its inner 2x2 submatrix equals the determinant of its corner
     2x2 submatrix.
-    
+
     Args:
         M: 4x4 numpy array to test
         verbose: Print detailed information (default: False)
-        
+
     Returns:
         True if M satisfies the matchgate condition, False otherwise
     """
@@ -729,10 +767,7 @@ def is_matchgate(M, verbose=False):
         return False
 
     # Extract corner elements
-    corner_matrix = np.array([
-        [M[0, 0], M[0, 3]],
-        [M[3, 0], M[3, 3]]
-    ])
+    corner_matrix = np.array([[M[0, 0], M[0, 3]], [M[3, 0], M[3, 3]]])
 
     # Extract inner 2x2 matrix
     inner_matrix = M[1:3, 1:3]
@@ -743,36 +778,45 @@ def is_matchgate(M, verbose=False):
 
     if np.allclose(det_inner, det_corner):
         if verbose:
-            print("Satisfies the matchgate condition, det1=det2=", np.round(det_inner, 4))
+            print(
+                "Satisfies the matchgate condition, det1=det2=",
+                np.round(det_inner, 4)
+            )
         return True
     else:
         if verbose:
-            print("Not matchgate\n det1=", np.round(det_inner, 4), "; det2=", np.round(det_corner, 4))
+            print(
+                "Not matchgate\n det1=",
+                np.round(det_inner, 4),
+                "; det2=",
+                np.round(det_corner, 4),
+            )
         return False
 
 
-# Wick's theorem implementation functions
-def wick_contraction(L, Gamma):
-    """
-    Compute Wick contraction for correlation function using pfaffian.
-    
-    Args:
-        L: List of operator indices
-        Gamma: Two-point correlation matrix
-        
-    Returns:
-        Pfaffian of the contracted covariance matrix
-    """
-    # Extract submatrix
-    tmp = Gamma[L, :]
-    g0 = tmp[:, L]
-    
-    # Correct for contractions
-    # Lower part of overlap matrix for L
-    sL = np.tril(g0 + g0.T)
-    
-    # Normal ordered contractions
-    gn = g0 - sL
+# # Wick's theorem implementation functions
+# def wick_contraction(L, Gamma):
+#     """
+#     Compute Wick contraction for correlation function using pfaffian.
+
+#     Args:
+#         L: List of operator indices
+#         Gamma: Two-point correlation matrix
+
+#     Returns:
+#         Pfaffian of the contracted covariance matrix
+#     """
+#     # Extract submatrix
+#     tmp = Gamma[L, :]
+#     g0 = tmp[:, L]
+
+#     # Correct for contractions
+#     # Lower part of overlap matrix for L
+#     sL = np.tril(g0 + g0.T)
+
+#     # Normal ordered contractions
+#     gn = g0 - sL
+
 
 def eigh_sp(H):
     r"""
@@ -782,29 +826,27 @@ def eigh_sp(H):
     Returns two objects, a 1-D array containing the eigenvalues of H and a
     2-D array containing a symplectic unitary that diagonalizes H.
 
-    This routine transforms to Majorana forms, gets the canonicalizing orthogonal
-    matrix for skew-symmetric real matrices. This is transformed to symplectic
-    form using
-    
+    This routine transforms to Majorana forms, gets the canonicalizing
+    orthogonal matrix for skew-symmetric real matrices. This is transformed to
+    symplectic form using
+
     .. math:: U_{symp} = \Omega^\dagger O \Omega
 
     Then a symplectic transformation is constructed to transform from canonical
     eigenstructure
 
     .. math::
-        L_{canonical} = \oplus_k 
-        \begin{pmatrix} 0 & -\lambda_k\\ 
+        L_{canonical} = \oplus_k
+        \begin{pmatrix} 0 & -\lambda_k\\
         \lambda_k & 0 \end{pmatrix}
-        
-        
+
     to standard eigenstructure
 
     .. math::
-        L_{standard} 
-        = 
-        \begin{pmatrix} -\Sigma & 0\\ 
+        L_{standard}
+        =
+        \begin{pmatrix} -\Sigma & 0\\
         0 & \Sigma \end{pmatrix}
-        
 
     Parameters:
         H: (2N, 2N) array
@@ -823,7 +865,7 @@ def eigh_sp(H):
     """
     n_sites = H.shape[0] // 2
 
-    ### Get Majorana form
+    # Get Majorana form
     Omega = build_Omega(n_sites)
     Omega_dag = Omega.conj().T
 
@@ -837,23 +879,21 @@ def eigh_sp(H):
     # cast to real assuming the imag part is zero
     ih = ih.real
 
-    
-
-    #we want the non-zero eigenvalue to appear first
+    # we want the non-zero eigenvalue to appear first
     def sfunction(x, y=None):
-        z = x if y is None else x + y*1j
+        z = x if y is None else x + y * 1j
         return abs(z) > 1e-10
-    
+
     # imported from scipy.linalg
-    [L, O, _ ] = schur(ih,sort=sfunction)
+    [L, Orth, _] = schur(ih, sort=sfunction)
 
     # format checking
     _print(L)
     assert check_canonical_form(L)
-    assert np.allclose(O @ O.T, np.eye(O.shape[0]))
-    assert check_canonical_form(O.T @ ih @ O)
-    assert np.allclose(O, O.real)
-    assert np.allclose(O @ L @ O.T, ih)
+    assert np.allclose(Orth @ Orth.T, np.eye(Orth.shape[0]))
+    assert check_canonical_form(Orth.T @ ih @ Orth)
+    assert np.allclose(Orth, Orth.real)
+    assert np.allclose(Orth @ L @ Orth.T, ih)
 
     # re-sort Schur output according to A matrix eig decomp
     A = H[n_sites:, n_sites:]
@@ -894,10 +934,10 @@ def eigh_sp(H):
         P = P_blocks @ Flips
 
         # Update the orthogonal transformation
-        O = O @ P
+        Orth = Orth @ P
 
     # Converting canonicalizing orthogonal matrix to symplectic unitary form
-    U_o = Omega_dag @ O @ Omega
+    U_o = Omega_dag @ Orth @ Omega
     K = build_K(n_sites)
     U = U_o @ K.conj().T
 
@@ -919,23 +959,24 @@ def eigh_sp(H):
 
 def eigv_sp(V):
     r"""
-    Return the left eigenvectors in symplectic form and the eigenvalues in the Y-form
+    Returns the left eigenvectors in symplectic form and eigenvalues in Y-form
 
     .. math::
 
-        L_{Y} = 
-        \begin{pmatrix} 0 & -\Sigma\\ 
+        L_{Y} =
+        \begin{pmatrix} 0 & -\Sigma\\
         \Sigma & 0 \end{pmatrix}
 
-    of the coefficient matrix in V-form whereby :math:`\hat V = \hat V^\dagger = \sum V_{ij}\alpha_i \alpha_j`
+    of the coefficient matrix in V-form whereby
+    :math:`\hat V = \hat V^\dagger = \sum V_{ij}\alpha_i \alpha_j`
 
-    Returns two objects, a 1-D array containing the eigenvalues of V in Y-form and a
-    2-D array containing a symplectic unitary that diagonalizes V.
+    Returns two objects, a 1-D array containing the eigenvalues of V in Y-form
+    and a 2-D array containing a symplectic unitary that diagonalizes V.
 
     .. math::
-        L_{standard} 
-        = 
-        \begin{pmatrix} -\Sigma & 0\\ 
+        L_{standard}
+        =
+        \begin{pmatrix} -\Sigma & 0\\
         0 & \Sigma \end{pmatrix}
 
     Parameters:
@@ -967,6 +1008,7 @@ def eigv_sp(V):
 
     return [S @ L, U]
 
+
 def eigm_sp_can(G):
     r"""
     Returns the orthogonal eigenvectors and the eigenvalues in direct sum
@@ -984,10 +1026,9 @@ def eigm_sp_can(G):
     the sympletic orthogonal matrix that transforms `G` to canonical
     eigenstructure form
     .. math::
-        L_{canonical} = \oplus_k 
-        \begin{matrix} 0 & -\lambda_k\\ 
+        L_{canonical} = \oplus_k
+        \begin{matrix} 0 & -\lambda_k\\
         \lambda_k & 0 \end{matrix}
-    
 
     Parameters
     ----------
@@ -1005,49 +1046,49 @@ def eigm_sp_can(G):
         U = [[  s  ,  t  ]
              [ t^* , s^* ]]
     """
-    n_sites = G.shape[0]//2
+    n_sites = G.shape[0] // 2
 
-    assert(np.allclose(G, 1j*G.imag))
+    assert np.allclose(G, 1j * G.imag)
 
     iG = -G.imag
 
-    #from scipy.linalg
-    [L,O] = schur(iG)
+    # from scipy.linalg
+    [L, O] = schur(iG)
 
-    #we will sort the states according to eigenvalues of A
+    # we will sort the states according to eigenvalues of A
 
-    #pull A
+    # pull A
     Omega = build_Omega(n_sites)
     H = Omega.conj().T @ G @ Omega
-    A = H[n_sites:,n_sites:]
+    A = H[n_sites:, n_sites:]
 
-    if not np.allclose(A,0):
+    if not np.allclose(A, 0):
         evs_a = np.linalg.eigvalsh(A)
 
-        #sort eigenvalues by decreasing eigenvalue
+        # sort eigenvalues by decreasing eigenvalue
         p = np.flip(np.argsort(abs(evs_a)))
 
-        #sort eigenvalues
+        # sort eigenvalues
         evs_a_p = evs_a[p]
 
-        ## Build permutation matrix according to sign of list
+        # # Build permutation matrix according to sign of list
         P_mat = None
 
         id = np.eye(2)
-        x = np.matrix( [[0,1],[1,0]])
+        x = np.matrix([[0, 1], [1, 0]])
 
         if evs_a_p[0] > 0:
             P_mat = x
         else:
             P_mat = id
 
-        for k in range(1,n_sites):
+        for k in range(1, n_sites):
             if evs_a_p[k] > 0:
-                P_mat = kron_plus(P_mat,x)
+                P_mat = kron_plus(P_mat, x)
             else:
-                P_mat = kron_plus(P_mat,id)
+                P_mat = kron_plus(P_mat, id)
 
-        #resort eigenspaces
+        # resort eigenspaces
         O = O @ P_mat
 
     L = O.T @ G @ O
@@ -1073,8 +1114,8 @@ def eigm_sp(G):
 
     .. math::
 
-        L_{Y} = 
-        \begin{pmatrix} 0 & -\Sigma\\ 
+        L_{Y} =
+        \begin{pmatrix} 0 & -\Sigma\\
         \Sigma & 0 \end{pmatrix}
 
     Parameters
@@ -1090,19 +1131,18 @@ def eigm_sp(G):
     eigenvectors: ( 2N, 2N ) ndarray
         Orthogonal matrix such that  O^T O = Id
     """
-    n_sites = G.shape[0]//2
+    n_sites = G.shape[0] // 2
 
-    #convert to standard form
+    # convert to standard form
     Omega = build_Omega(n_sites)
     H = Omega.conj().T @ G @ Omega
 
-    [l,U]=eigh_sp(H)
+    [l, U] = eigh_sp(H)
 
-    #convert symplectic unitary to orthogonal
-    O = Omega @ U @ Omega.conj().T
+    # convert symplectic unitary to orthogonal
+    Orth = Omega @ U @ Omega.conj().T
 
-    #compute the canonical form
-    L = O.T @ G @ O
+    # compute the canonical form
+    L = Orth.T @ G @ Orth
 
-    return [L,O]
-
+    return [L, Orth]

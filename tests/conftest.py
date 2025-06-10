@@ -10,7 +10,7 @@ import sys
 import os
 
 # Add the src directory to the path so we can import ff
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 import ff
 
@@ -31,12 +31,7 @@ def small_system():
     alphas = ff.jordan_wigner_alphas(n_sites)
     A = np.array([[1.0, 0.5], [0.5, 1.0]])
     H = ff.build_H(n_sites, A)
-    return {
-        'n_sites': n_sites,
-        'alphas': alphas,
-        'A': A,
-        'H': H
-    }
+    return {"n_sites": n_sites, "alphas": alphas, "A": A, "H": H}
 
 
 @pytest.fixture
@@ -49,12 +44,7 @@ def medium_system():
     A = np.random.random((n_sites, n_sites))
     A = A + A.T  # Ensure Hermiticity
     H = ff.build_H(n_sites, A)
-    return {
-        'n_sites': n_sites,
-        'alphas': alphas,
-        'A': A,
-        'H': H
-    }
+    return {"n_sites": n_sites, "alphas": alphas, "A": A, "H": H}
 
 
 @pytest.fixture
@@ -62,23 +52,16 @@ def test_matrices():
     """Provide standard test matrices for various tests"""
     return {
         # Skew-symmetric matrices for pfaffian tests
-        'skew_2x2': np.array([[0, 1], [-1, 0]]),
-        'skew_4x4': np.array([[0, 1, 2, 3],
-                              [-1, 0, 4, 5],
-                              [-2, -4, 0, 6],
-                              [-3, -5, -6, 0]]),
-        
+        "skew_2x2": np.array([[0, 1], [-1, 0]]),
+        "skew_4x4": np.array(
+            [[0, 1, 2, 3], [-1, 0, 4, 5], [-2, -4, 0, 6], [-3, -5, -6, 0]]
+        ),
         # Hermitian matrices for Hamiltonian tests
-        'hermitian_2x2': np.array([[1.0, 0.5], [0.5, 1.0]]),
-        'hermitian_3x3': np.array([[2.0, 0.5, 0.2],
-                                   [0.5, 1.5, 0.3],
-                                   [0.2, 0.3, 1.0]]),
-        
+        "hermitian_2x2": np.array([[1.0, 0.5], [0.5, 1.0]]),
+        "hermitian_3x3": np.array([[2.0, 0.5, 0.2], [0.5, 1.5, 0.3], [0.2, 0.3, 1.0]]),
         # Pairing matrices (antisymmetric)
-        'pairing_2x2': np.array([[0, 0.2], [-0.2, 0]]),
-        'pairing_3x3': np.array([[0, 0.1, 0.2],
-                                 [-0.1, 0, 0.3],
-                                 [-0.2, -0.3, 0]]),
+        "pairing_2x2": np.array([[0, 0.2], [-0.2, 0]]),
+        "pairing_3x3": np.array([[0, 0.1, 0.2], [-0.1, 0, 0.3], [-0.2, -0.3, 0]]),
     }
 
 
@@ -86,20 +69,17 @@ def test_matrices():
 def kitaev_chain_params():
     """Parameters for Kitaev chain model tests"""
     return {
-        'n_sites': 6,
-        'mu': 0.5,      # Chemical potential
-        't': 1.0,       # Hopping strength
-        'delta': 0.8    # Pairing strength
+        "n_sites": 6,
+        "mu": 0.5,  # Chemical potential
+        "t": 1.0,  # Hopping strength
+        "delta": 0.8,  # Pairing strength
     }
 
 
 @pytest.fixture
 def tolerance():
     """Standard numerical tolerance for tests"""
-    return {
-        'rtol': 1e-10,
-        'atol': 1e-12
-    }
+    return {"rtol": 1e-10, "atol": 1e-12}
 
 
 def pytest_configure(config):
@@ -107,9 +87,7 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
     )
-    config.addinivalue_line(
-        "markers", "integration: marks tests as integration tests"
-    )
+    config.addinivalue_line("markers", "integration: marks tests as integration tests")
     config.addinivalue_line(
         "markers", "tutorial: marks tests that validate tutorial examples"
     )
@@ -124,15 +102,18 @@ def pytest_collection_modifyitems(config, items):
         # Mark tutorial tests
         if "tutorial" in item.nodeid:
             item.add_marker(pytest.mark.tutorial)
-        
+
         # Mark example tests
         if "example" in item.nodeid:
             item.add_marker(pytest.mark.example)
-        
+
         # Mark integration tests
         if "integration" in item.nodeid:
             item.add_marker(pytest.mark.integration)
-        
+
         # Mark slow tests (those involving large systems or many iterations)
-        if any(keyword in item.name.lower() for keyword in ['performance', 'benchmark', 'large']):
+        if any(
+            keyword in item.name.lower()
+            for keyword in ["performance", "benchmark", "large"]
+        ):
             item.add_marker(pytest.mark.slow)

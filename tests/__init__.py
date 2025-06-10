@@ -6,7 +6,7 @@ including unit tests, integration tests, tutorial validation, and performance be
 
 Test modules:
     test_tutorials: Validation of tutorial examples from documentation
-    test_examples: Validation of example code from documentation  
+    test_examples: Validation of example code from documentation
     test_ff_lib: Core library functionality tests
     test_ff_combinatorics: Combinatorial functions tests
     test_ff_graph_theory: Graph algorithms tests

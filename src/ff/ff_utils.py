@@ -22,7 +22,7 @@ def _print(obj, k=9):
     """
     try:
         val = np.array(obj)
-    
+
         # get current precision
         p = np.get_printoptions()["precision"]
 
@@ -39,61 +39,59 @@ def _print(obj, k=9):
 
         # reset precision
         np.set_printoptions(precision=p)
-        return 
-    except:
+        return
+    finally:
         return print(obj)
 
 
 def clean(obj, threshold=1e-6):
     """
     Clean small numerical values from arrays or matrices.
-    
+
     Args:
         obj: NumPy array or matrix to clean
         threshold: Values below this threshold are set to zero
-    
+
     Note: if threshold is an integer, it will be converted to 10^-threshold
 
     Returns:
         Cleaned array with small values set to zero
     """
 
-    if threshold>1:
-        #assume that an integer number of decimal places has been requested
-        threshold=10**(-threshold)
+    if threshold > 1:
+        # assume that an integer number of decimal places has been requested
+        threshold = 10 ** (-threshold)
 
     approx_obj = np.round(obj / threshold) * threshold
-    if np.allclose(approx_obj,obj,threshold):
+    if np.allclose(approx_obj, obj, threshold):
         obj = approx_obj
 
-
-    if hasattr(obj, 'real') and hasattr(obj, 'imag'):
+    if hasattr(obj, "real") and hasattr(obj, "imag"):
         # Handle complex arrays
 
-        #clean the arrays
+        # clean the arrays
         real_part = np.where(np.abs(obj.real) < threshold, 0, obj.real)
         imag_part = np.where(np.abs(obj.imag) < threshold, 0, obj.imag)
-        
-        
-        #reduce to scalars as needed
+
+        # reduce to scalars as needed
         if real_part.size == 1:
             real_part = real_part.item()
 
         if imag_part.size == 1:
             imag_part = imag_part.item()
-        
-        #cast to real if there is no imaginary part      
-        if np.allclose(imag_part,0):
-            #make it real
+
+        # cast to real if there is no imaginary part
+        if np.allclose(imag_part, 0):
+            # make it real
             return real_part
         else:
-            #return the cleaned arrays
+            # return the cleaned arrays
             return real_part + 1j * imag_part
     else:
         # Handle real arrays
         real_part = np.where(np.abs(obj) < threshold, 0, obj)
 
-        #reduce to scalars
+        # reduce to scalars
         if real_part.size == 1:
             real_part = real_part.item()
 
@@ -103,11 +101,11 @@ def clean(obj, threshold=1e-6):
 def formatted_output(obj, precision=6):
     """
     Format numerical output with specified precision.
-    
+
     Args:
         obj: Object to format
         precision: Number of decimal places
-        
+
     Returns:
         Formatted string representation
     """
@@ -121,7 +119,7 @@ def formatted_output(obj, precision=6):
             return f"{obj:.{precision}f}"
     else:
         return str(obj)
-    
+
 
 def generate_random_bitstring(n, k):
     """Generates a random bit string of length n with Hamming weight k.
@@ -147,11 +145,11 @@ def generate_random_bitstring(n, k):
 
 def kron_plus(a, b):
     """Computes the direct sum of two matrices
-    
+
     Args:
         a: First matrix
         b: Second matrix
-        
+
     Returns:
         Direct sum matrix [[a, 0], [0, b]]
     """
