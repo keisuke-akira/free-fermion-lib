@@ -253,9 +253,9 @@ def dual_graph_H(G, F, T):
     Create the dual graph according to the PFO algorithm (Vazirani 1987).
     
     "Construct a new graph H having one vertex corresponding to each face (
-      including the infinite face) of G. Two vertices u and v of H are
-      connected by an edge iff the corresponding faces share an edge not in T.
-      Let r be the vertex in H corresponding to the infinite face of G. Root H at r."
+    including the infinite face) of G. Two vertices u and v of H are
+    connected by an edge iff the corresponding faces share an edge not in T.
+    Let r be the vertex in H corresponding to the infinite face of G. Root H at r."
 
     Args:
         G: Original planar graph

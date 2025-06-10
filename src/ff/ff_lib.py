@@ -103,8 +103,12 @@ def jordan_wigner_majoranas(n_sites):
     """
     Generate a set of Majorana operators under Jordan-Wigner.
 
-    γ_j = (a_j + a_j†)/√2,  j < n_sites
-    γ_k = i(a_k - a_k†)/√2,  k < 2 * n_sites
+    .. math:: 
+      
+      \gamma_j = (a_j + a_j^\dagger)/\sqrt{2}, \qquad j < n_{sites}
+
+      \gamma_k = i(a_k - a_k^\dagger)/\sqrt{2},\qquad  k < 2n_{sites}
+      
 
     Args:
         n_sites: The number of lattice sites
@@ -129,14 +133,15 @@ def jordan_wigner_majoranas(n_sites):
 
 
 def rotate_operators(C, alphas, Left=False, verbose=False):
-    """
+    r"""
     Transform set of operators using a matrix C per:
 
-        β_j = Σ_i C_ji α_i
+    .. math:: \beta_j = \sum_i C_{ji} \alpha_i
+        
 
     Use Left=True if instead you want
 
-        β_j = Σ_i α_i C_ij*
+    .. math:: \beta_j = \sum_i  \alpha_i C_{ij}^*
 
     Args:
         C: A [len(alpha) x len(alpha)] coefficient matrix
@@ -613,11 +618,17 @@ def compute_2corr_matrix(rho, n_sites, alphas=None, conjugation=None):
     Calculate the two-point correlation matrix
 
     Γ = ⟨vec α vec α^t⟩
-    Γ_ij = Tr[rho α_i α_j]
+    Γ_{ij} = Tr[rho α_i α_j]
 
     By changing the input conjugation parameter, this function also computes
     P = ⟨vec α vec α†⟩ (conjugation == T)
     η = ⟨vec α† vec α^t⟩ (conjugation < 0)
+
+    By default the operators are not conjugated but if 
+    `conjugation` is True or positive:
+                            P_ij = Tr[ρ α_i α_j†]
+    And if `conjugation` is negative:
+                            η_ij = Tr[ρ α_i† α_j]
 
     Args:
         rho: should be a [2**n_sites x 2**n_sites] matrix
@@ -625,11 +636,6 @@ def compute_2corr_matrix(rho, n_sites, alphas=None, conjugation=None):
         alphas: a set of 2 n_sites of fermionic operators (optional)
         conjugation: Indicates if the operators should be conjugated (optional)
 
-                    By default the operators are not conjugated but
-                    if `conjugation` is True or positive:
-                            P_ij = Tr[ρ α_i α_j†]
-                    And if `conjugation` is negative:
-                            η_ij = Tr[ρ α_i† α_j]
     Returns:
         An [2 n_sites x 2 n_sites] correlation matrix
     """
@@ -769,7 +775,7 @@ def wick_contraction(L, Gamma):
     gn = g0 - sL
 
 def eigh_sp(H):
-    """
+    r"""
     Return the eigenvectors in symplectic form and the eigenvalues of a complex
     Hermitian (conjugate symmetric) FF coefficient array.
 
@@ -780,25 +786,32 @@ def eigh_sp(H):
     matrix for skew-symmetric real matrices. This is transformed to symplectic
     form using
     
-    U_symp = Ω† O Ω
+    .. math:: U_{symp} = \Omega^\dagger O \Omega
 
     Then a symplectic transformation is constructed to transform from canonical
     eigenstructure
 
-    L_canonical = ⊕_k [[  0  , -ev_k],
-                        [ev_k ,   0  ]]
-
+    .. math::
+        L_{canonical} = \oplus_k 
+        \begin{pmatrix} 0 & -\lambda_k\\ 
+        \lambda_k & 0 \end{pmatrix}
+        
+        
     to standard eigenstructure
 
-    L_standard = [[-Σ ,  0 ],
-                  [ 0  , Σ ]]
+    .. math::
+        L_{standard} 
+        = 
+        \begin{pmatrix} -\Sigma & 0\\ 
+        0 & \Sigma \end{pmatrix}
+        
 
     Parameters:
         H: (2N, 2N) array
             Should be of the form
                 [[-A.conj(), B],
                  [-B.conj(), A]]
-            with A = A† and B = -B^T
+            with :math:`A = A^\dagger` and :math:`B = -B^T`
 
     Returns:
         A tuple with
@@ -905,19 +918,25 @@ def eigh_sp(H):
 
 
 def eigv_sp(V):
-    """
-    Return the left eigenvectors in symplectic form and the eigenvalues in the
+    r"""
+    Return the left eigenvectors in symplectic form and the eigenvalues in the Y-form
 
-    L_Y= [[ 0  , -Σ],
-          [Σ,    0 ]]
+    .. math::
 
-    of the coefficient matrix in V-form whereby H_op = sum V_ij α_i α_j
+        L_{Y} = 
+        \begin{pmatrix} 0 & -\Sigma\\ 
+        \Sigma & 0 \end{pmatrix}
 
-    Returns two objects, a 1-D array containing the eigenvalues of V and a
+    of the coefficient matrix in V-form whereby :math:`\hat V = \hat V^\dagger = \sum V_{ij}\alpha_i \alpha_j`
+
+    Returns two objects, a 1-D array containing the eigenvalues of V in Y-form and a
     2-D array containing a symplectic unitary that diagonalizes V.
 
-    L_standard = [[-Σ ,  0 ],
-                  [ 0  , Σ ]]
+    .. math::
+        L_{standard} 
+        = 
+        \begin{pmatrix} -\Sigma & 0\\ 
+        0 & \Sigma \end{pmatrix}
 
     Parameters:
         V: (2N, 2N) array
@@ -928,7 +947,7 @@ def eigv_sp(V):
 
     Returns:
         A tuple with
-        eigenvalues: (2N) ndarray in L_Y form
+        eigenvalues: (2N) ndarray in :math:`L_Y` form
         eigenvectors: (2N,2N) ndarray
             Ortho-normal eigenvectors arranged in the form
                 U = [[ s , t ],
@@ -949,24 +968,26 @@ def eigv_sp(V):
     return [S @ L, U]
 
 def eigm_sp_can(G):
-    """
+    r"""
     Returns the orthogonal eigenvectors and the eigenvalues in direct sum
     canonical form for the Majorana coefficient matrix G.
 
     G should be of form
-
-        G =  i [[Im(A+Z),  Re(A+Z)]
-                [Re(Z-A),  Im(A-Z)]]
+    .. math::
+        G =  i\begin{bmatrix}Im(A+Z) & Re(A+Z)\\
+        Re(Z-A)&  Im(A-Z)
+        \end{bmatrix}
 
     where Z = -Z^T and A = A^dagger.
 
     Returns two objects, the eigenvalues of `G` in canonical form and
     the sympletic orthogonal matrix that transforms `G` to canonical
     eigenstructure form
-    $$
-      L_{canonical} = \Oplus_k  [[   0  ,  -ev_k ],
-                                 [ ev_k ,    0   ]]
-    $$
+    .. math::
+        L_{canonical} = \oplus_k 
+        \begin{matrix} 0 & -\lambda_k\\ 
+        \lambda_k & 0 \end{matrix}
+    
 
     Parameters
     ----------
@@ -977,7 +998,7 @@ def eigm_sp_can(G):
     A tuple with
 
     eigenvalues:  (2N) ndarray
-        Lc = Oplus_k [[   0  ,  -ev_k ],
+        Lc = \oplus_k [[   0  ,  -ev_k ],
                       [ ev_k ,    0   ]]
     eigenvectors: (2N,2N) ndarray
         Ortho-normal eigenvectors arranged in the form
@@ -1035,24 +1056,26 @@ def eigm_sp_can(G):
 
 
 def eigm_sp(G):
-    """
+    r"""
     Returns the orthogonal eigenvectors and the eigenvalues in L_Y form for the
-    Majorana coefficient matrix G.
+    Majorana coefficient matrix G. G should be of form
 
-    G should be of form
+    .. math::
+        G =  i\begin{bmatrix}Im(A+Z) & Re(A+Z)\\
+        Re(Z-A)&  Im(A-Z)
+        \end{bmatrix}
 
-        G =  i [[Im(A+Z),  Re(A+Z)]
-                [Re(Z-A),  Im(A-Z)]]
-
-    where Z = -Z^T and A = A^dagger.
+    where :math:`Z = -Z^T` and :math:`A = A^\dagger`.
 
     Returns two objects, the eigenvalues of `G` in canonical form and
     the sympletic orthogonal matrix that transforms `G` to the Y
     eigenstructure form
-    $$
-      L_{canonical} = \Oplus_k  [[   0    ,  Sigma ],
-                                 [ -Sigma ,    0   ]]
-    $$
+
+    .. math::
+
+        L_{Y} = 
+        \begin{pmatrix} 0 & -\Sigma\\ 
+        \Sigma & 0 \end{pmatrix}
 
     Parameters
     ----------

@@ -33,15 +33,15 @@ def sgn(permutation):
 
 
 def pf(A):
-    """Computes pfaffian via combinatorial formula:
+    r"""Computes pfaffian via combinatorial formula:
 
-    Given A of even dimension N = 2 * n_e we have the pfaffian as:
+    Given :math:`A` of even dimension :math:`N = 2 n_e` we have the pfaffian as:
 
-    .. math:: pf(A) = \frac{1}{2^{n_e} n_e!} \sum_{sigma}^{S_{N}} sgn(\sigma) W_\sigma(A)
+    .. math:: pf(A) =  \sum_{\sigma\in S_N}^{N!}  sgn(\sigma) W_\sigma(A)/(2^{n_e} n_e!)
 
     Where the weight of matching :math:`\sigma` is given by
 
-    .. math :: W_\sigma(A) = \prod_{i=0}^{n_e} A_{sig(2i), sig(2i+1)} 
+    .. math:: W_\sigma(A) = \prod_{i=0}^{n_e} A_{\sigma(2i), \sigma(2i+1)}
 
     Args:
         A: Square matrix (numpy array or array-like)
@@ -74,15 +74,14 @@ def pf(A):
 def hf(A):
     """Computes hafian via combinatorial formula.
 
-    Given A of even dimension N = 2 * n_e we have the hafian as:
+    Given :math:`A` of even dimension :math:`N = 2 n_e` we have the hafian as:
 
-    $$
-    hf(A) = \frac{1}{2^{n_e} n_e!} \sum_{sigma}^{S_N} W_\sigma(A)
-    $$
+    .. math:: hf(A) =  \sum_{\sigma\in S_N}^{N!} W_\sigma(A)/(2^{n_e} n_e!)
 
-    Where the weight of matching $\sigma$ is given by
 
-     $ W_\sigma(A) = \prod_{i=0}^{n_e} A_{sig(2i), sig(2i+1)} $
+    Where the weight of matching :math:`\sigma` is given by
+
+    .. math:: W_\sigma(A) = \prod_{i=0}^{n_e} A_{\sigma(2i), \sigma(2i+1)}
      
     Args:
         A: Square matrix (numpy array or array-like)
@@ -115,13 +114,13 @@ def hf(A):
 def pt(A):
     """Computes permanent via combinatorial formula.
 
-    Given A of dimension N we have the permanent as:
+    Given :math:`A` of dimension :math:`N` we have the permanent as:
 
-     $ pt(A) = \sum_{\sigma\in S_N}^{N!} B_\sigma(A) $
+    .. math:: pt(A) = \sum_{\sigma\in S_N}^{N!} B_\sigma(A)
 
-    Where the bipartite matching of $\sigma$ is given by
+    Where the bipartite matching of :math:`\sigma` is given by
 
-     $ B_\sigma(A) = \prod_{i=1}^N A_{i,\sigma(i)} $
+    .. math:: B_\sigma(A) = \prod_{i=1}^N A_{i,\sigma(i)}
 
     Args:
         A: Square matrix (numpy array or array-like)
@@ -147,13 +146,13 @@ def pt(A):
 def dt(A):
     """Computes determinant via combinatorial formula.
 
-    Given A of dimension N we have the determinant as:
+    Given :math:`A` of dimension :math:`N` we have the determinant as:
 
-     $ dt(A) = \sum_{\sigma\in S_N}^{N!} sgn(\sigma) B_\sigma(A) $
+    .. math:: dt(A) = \sum_{\sigma\in S_N}^{N!} sgn(\sigma) B_\sigma(A)
 
-    Where the bipartite matching of $\sigma$ is given by
+    Where the bipartite matching of :math:`\sigma` is given by
 
-     $ B_\sigma(A) = \prod_{i=1}^N A_{i,\sigma(i)} $
+    .. math:: B_\sigma(A) = \prod_{i=1}^N A_{i,\sigma(i)}
 
     Args:
         A: Square matrix (numpy array or array-like)
@@ -180,11 +179,10 @@ def dt_eigen(A):
     """
     Computes the determinant of a matrix using eigenvalue decomposition.
 
-     $$
-     dt(A) = \prod_{i=0}^{n-1} \lambda_i
-     $$
+    
+    .. math:: dt(A) = \prod_{i=0}^{n-1} \lambda_i
 
-    with $\lambda_i$ the eigenvalues of A.
+    with :math:`\lambda_i` the eigenvalues of :math:`A`.
 
     Args:
         A: A NumPy array representing the square matrix.

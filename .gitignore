@@ -22,6 +22,7 @@ var/
 wheels/
 share/python-wheels/
 *.egg-info/
+*.egg-info
 .installed.cfg
 *.egg
 MANIFEST
@@ -250,6 +251,7 @@ tmp/
 temp/
 *.tmp
 *.temp
+out
 
 # Backup files
 *.bak

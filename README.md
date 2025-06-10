@@ -65,7 +65,7 @@ A = A + A.T  # Make symmetric
 H = build_H(n_sites, A)
 
 # Generate a Gaussian state
-rho = generate_gaussian_state(n_sites, H, alphas)
+rho = ff.random_FF_state(n_sites)
 
 # Compute correlation matrix
 gamma = compute_2corr_matrix(rho, n_sites, alphas)
