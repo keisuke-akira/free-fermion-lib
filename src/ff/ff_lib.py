@@ -6,12 +6,12 @@ for free fermion systems, including Jordan-Wigner transformations, symplectic
 diagonalization, Gaussian state constructions, and correlation matrix computations.
 
 Key functionality:
-- Jordan-Wigner fermionic operators (Dirac and Majorana)
-- Symplectic free-fermion diagonalization
-- Gaussian state generation and manipulation
-- Fermionic correlation matrix computations
-- Block matrix construction for coefficient matrices
-- Wick's theorem implementation
+ - Jordan-Wigner fermionic operators (Dirac and Majorana)
+ - Symplectic free-fermion diagonalization
+ - Gaussian state generation and manipulation
+ - Fermionic correlation matrix computations
+ - Block matrix construction for coefficient matrices
+ - Wick's theorem implementation
 
 Copyright 2025 James.D.Whitfield@dartmouth.edu
 """

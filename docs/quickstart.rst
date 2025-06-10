@@ -87,10 +87,34 @@ Build coefficient matrices for quadratic Hamiltonians::
 Gaussian States
 ---------------
 
-Generate Gaussian states from Hamiltonians::
+Generate random Gaussian states ::
 
     # Generate a Gaussian state
-    rho = ff.generate_gaussian_state(n_sites, H, alphas)
+    rho = ff.random_FF_state(n_sites)
+    print(f"Generated state shape: {rho.shape}")
+    
+    # Verify it's normalized
+    trace = np.trace(rho)
+    print(f"Trace (should be 1): {trace}")
+    
+Generate Gaussian state from random quadratic Hamiltonian:: 
+    # Generate random quadratic Hamiltonian
+    A = np.random.randn((n_sites, n_sites))+1j*np.random.randn((n_sites, n_sites))
+    Z = np.random.randn((n_sites, n_sites))+1j*np.random.randn((n_sites, n_sites))
+    A = A + A.conj().T  # Ensure Hermiticity
+    Z = Z - Z.T # Ensure skew-symmetry
+    
+    # build [(2 n_sites) x (2 n_sites) ]  coefficient matrix
+    H = ff.build_H(n_sites,A,Z)
+
+    #build n-body operator \hat H [2**n_sites x 2**n_sites]
+    H_op = ff.build_op(H, n_sites, alphas)
+
+    # FF state
+    rho = scipy.linalg.expm(-H_op)  # Exponential of the parent Hamiltonian
+    rho /= np.trace(rho)  # Normalize the state
+
+    print(f"Generated state with Hamiltonian shape: {rho.shape}")
     print(f"State matrix shape: {rho.shape}")
     
     # Verify it's normalized
@@ -173,12 +197,10 @@ Here's a complete example that demonstrates the main workflow::
     n_sites = 2
     alphas = ff.jordan_wigner_alphas(n_sites)
     
-    # Create Hamiltonian
-    A = np.array([[1.0, 0.5], [0.5, 1.0]])  # Symmetric matrix
-    H = ff.build_H(n_sites, A)
-    
-    # Generate Gaussian state
-    rho = ff.generate_gaussian_state(n_sites, H, alphas)
+    seed = 42
+
+    # Generate random Gaussian state
+    rho, H = ff.random_FF_state(n_sites, returnH=True)
     
     # Compute correlation matrix
     gamma = ff.compute_2corr_matrix(rho, n_sites, alphas)
@@ -187,7 +209,7 @@ Here's a complete example that demonstrates the main workflow::
     eigenvals, eigenvecs = ff.eigh_sp(H)
     
     # Print results
-    print("Hamiltonian eigenvalues:")
+    print("Parent Hamiltonian eigenvalues:")
     ff._print(np.diag(eigenvals))
     
     print("\nCorrelation matrix:")

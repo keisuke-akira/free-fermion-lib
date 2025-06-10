@@ -37,13 +37,11 @@ def pf(A):
 
     Given A of even dimension N = 2 * n_e we have the pfaffian as:
 
-    $$
-    pf(A) = \frac{1}{2^{n_e} n_e!} \sum_{sigma}^{S_{N}} sgn(\sigma) W_\sigma(A)
-    $$
+    .. math:: pf(A) = \frac{1}{2^{n_e} n_e!} \sum_{sigma}^{S_{N}} sgn(\sigma) W_\sigma(A)
 
-    Where the weight of matching $\sigma$ is given by
+    Where the weight of matching :math:`\sigma` is given by
 
-     $ W_\sigma(A) = \prod_{i=0}^{n_e} A_{sig(2i), sig(2i+1)} $
+    .. math :: W_\sigma(A) = \prod_{i=0}^{n_e} A_{sig(2i), sig(2i+1)} 
 
     Args:
         A: Square matrix (numpy array or array-like)
