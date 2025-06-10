@@ -35,7 +35,7 @@ templates_path = ['_templates']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'generated']
 
 # The suffix(es) of source filenames.
 source_suffix = {
@@ -48,14 +48,13 @@ master_doc = 'index'
 
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+#html_static_path = ['_static']
 
 # Theme options
 html_theme_options = {
     'canonical_url': '',
     'analytics_id': '',
     'logo_only': False,
-    'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
     'vcs_pageview_mode': '',
@@ -96,7 +95,7 @@ autodoc_default_options = {
 }
 
 # Autosummary settings
-autosummary_generate = True
+autosummary_generate = False
 
 # Intersphinx mapping
 intersphinx_mapping = {

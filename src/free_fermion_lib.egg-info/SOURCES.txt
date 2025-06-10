@@ -1,22 +1,20 @@
 LICENSE
 MANIFEST.in
 README.md
+pyproject.toml
 requirements.txt
 setup.py
-Research/0. Combinatorial functions.ipynb
-Research/1. PFO-Algorithm.ipynb
-Research/10. Two-point correlation matrix.ipynb
-Research/11. Covariance matrix.ipynb
-Research/2. Gaussian Distribution_Isseler.ipynb
-Research/3. Gaussian Fermions_Wick.ipynb
-Research/4. Quadratic fermionic operators (FF Generators).ipynb
-Research/5.1 Testing FF rotations.ipynb
-Research/5.2 FF rotation-theory.ipynb
-Research/6. Gaussian States.ipynb
-Research/7. Symplectic diagonalization.ipynb
-Research/8. FF matrix decompositions.ipynb
-Research/9. Covariance matrix element lemma.ipynb
-Research/project_path.py
+docs/api.rst
+docs/conf.py
+docs/contributing.rst
+docs/examples.rst
+docs/index.rst
+docs/installation.rst
+docs/quickstart.rst
+docs/requirements.txt
+docs/tutorials.rst
+docs/generated/ff.ff_utils._print.rst
+docs/generated/ff.ff_utils.clean.rst
 src/ff/__init__.py
 src/ff/ff_combinatorics.py
 src/ff/ff_graph_theory.py
@@ -28,3 +26,13 @@ src/free_fermion_lib.egg-info/dependency_links.txt
 src/free_fermion_lib.egg-info/not-zip-safe
 src/free_fermion_lib.egg-info/requires.txt
 src/free_fermion_lib.egg-info/top_level.txt
+tests/test_examples.py
+tests/test_ff_combinatorics.py
+tests/test_ff_graph_theory.py
+tests/test_ff_lib.py
+tests/test_ff_utils.py
+tests/test_integration.py
+tests/test_performance.py
+tests/test_tutorials.py
+tests/test_data/__init__.py
+tests/test_data/reference_matrices.py

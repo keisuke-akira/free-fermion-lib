@@ -6,20 +6,6 @@ This section contains detailed tutorials for using the Free Fermion Library.
 .. note::
    These tutorials assume you have already installed the library and are familiar with the basic concepts from the :doc:`quickstart` guide.
 
-Tutorial Notebooks
-------------------
-
-The following Jupyter notebooks provide step-by-step tutorials:
-
-.. toctree::
-   :maxdepth: 1
-
-   notebooks/01_getting_started
-   notebooks/02_jordan_wigner_operators
-   notebooks/03_pfaffian_calculations
-   notebooks/04_graph_algorithms
-   notebooks/05_advanced_examples
-
 Tutorial Topics
 ---------------
 

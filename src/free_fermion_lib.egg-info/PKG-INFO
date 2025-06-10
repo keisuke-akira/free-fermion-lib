@@ -1,16 +1,16 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: free-fermion-lib
 Version: 1.0.0
 Summary: A comprehensive Python library for free fermion systems
-Home-page: https://github.com/your-username/free-fermion-lib
+Home-page: https://github.com/jdwhitfield/free-fermion-lib
 Author: James D. Whitfield
-Author-email: James.D.Whitfield@dartmouth.edu
-License: UNKNOWN
-Project-URL: Bug Reports, https://github.com/your-username/free-fermion-lib/issues
-Project-URL: Source, https://github.com/your-username/free-fermion-lib
+Author-email: "James D. Whitfield" <James.D.Whitfield@dartmouth.edu>
+License: MIT
+Project-URL: Homepage, https://github.com/jdwhitfield/free-fermion-lib
 Project-URL: Documentation, https://free-fermion-lib.readthedocs.io/
+Project-URL: Repository, https://github.com/jdwhitfield/free-fermion-lib
+Project-URL: Bug Reports, https://github.com/jdwhitfield/free-fermion-lib/issues
 Keywords: quantum physics,free fermions,combinatorics,graph theory,pfaffian,quantum computing,linear algebra,symplectic
-Platform: UNKNOWN
 Classifier: Development Status :: 4 - Beta
 Classifier: Intended Audience :: Science/Research
 Classifier: Topic :: Scientific/Engineering :: Physics
@@ -24,9 +24,25 @@ Classifier: Programming Language :: Python :: 3.11
 Classifier: Programming Language :: Python :: 3.12
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
-Provides-Extra: dev
-Provides-Extra: docs
 License-File: LICENSE
+Requires-Dist: numpy>=1.20.0
+Requires-Dist: scipy>=1.7.0
+Requires-Dist: networkx>=2.6.0
+Requires-Dist: matplotlib>=3.3.0
+Provides-Extra: dev
+Requires-Dist: pytest>=6.0; extra == "dev"
+Requires-Dist: pytest-cov>=2.0; extra == "dev"
+Requires-Dist: black>=21.0; extra == "dev"
+Requires-Dist: flake8>=3.8; extra == "dev"
+Requires-Dist: mypy>=0.800; extra == "dev"
+Provides-Extra: docs
+Requires-Dist: sphinx>=4.0; extra == "docs"
+Requires-Dist: sphinx-rtd-theme>=1.0; extra == "docs"
+Requires-Dist: nbsphinx>=0.8; extra == "docs"
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
 
 # Free Fermion Library
 
@@ -105,20 +121,6 @@ skew_matrix = np.array([[0, 1, -2], [-1, 0, 3], [2, -3, 0]])
 pfaffian_value = pf(skew_matrix)
 ```
 
-## Research Notebooks
-
-The `Research/` directory contains Jupyter notebooks demonstrating various aspects of free fermion theory:
-
-- **Notebook 0**: Combinatorial functions
-- **Notebook 1**: PFO Algorithm implementation
-- **Notebook 2**: Gaussian distributions
-- **Notebook 3**: Gaussian fermions and Wick's theorem
-- **Notebook 4**: Quadratic fermionic operators
-- **Notebooks 5.1-5.2**: FF rotations and theory
-- **Notebook 6**: Gaussian states
-- **Notebook 7**: Symplectic diagonalization
-- **Notebooks 8-11**: Advanced matrix decompositions and covariance matrices
-
 ## Development
 
 ### Running Tests
@@ -159,4 +161,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Contact
 
 James D. Whitfield - James.D.Whitfield@dartmouth.edu
-
