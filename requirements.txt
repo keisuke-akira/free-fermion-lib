@@ -8,3 +8,10 @@ matplotlib>=3.3.0
 
 # Optional dependencies for enhanced functionality
 # prettytable>=2.0.0  # For formatted table output in notebooks
+
+# Optional dependencies for pytest 
+#pytest 
+#pytest-timeout
+#pytest-xdist
+#pytest-html
+
