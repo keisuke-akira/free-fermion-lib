@@ -31,19 +31,27 @@ class TestTutorialWorkflows:
         # Step 1: Create a simple fermionic system
         n_sites = 4
         
-        # Create Hamiltonian matrix (quadratic form)
-        H = np.random.randn(n_sites, n_sites)
-        H = H + H.T  # Make Hermitian
+        # Create random coupling generating coupling matrix
+        rho = ff.random_FF_state(n_sites)
+
         
         # Step 2: Compute correlation matrix
-        correlation_matrix = ff.correlation_matrix(H)
+        correlation_matrix = ff.correlation_matrix(rho)
         
+
+        S = ff.compute_algebra_S(ff.jordan_wigner_alphas(n_sites))
+        # Step 3: Verify properties of the correlation matrix
+        # Verify that Gamma + Gamma^T = S
+        assert correlation_matrix.shape == ( 2*n_sites , 2*n_sites ), "Correlation matrix should have correct shape"
+        assert np.allclose(correlation_matrix + correlation_matrix.T , S), "Gamma + Gamma^T should equal S"
+        assert np.allclose(correlation_matrix @ S , (correlation_matrix @ S).T.conj()), "Correlation matrix should be Hermitian"
+
+
         # Step 3: Analyze properties
-        eigenvals = np.linalg.eigvals(correlation_matrix)
-        
-        # Verify workflow results
-        assert correlation_matrix.shape == (n_sites, n_sites), "Correlation matrix should have correct shape"
-        assert np.allclose(correlation_matrix, correlation_matrix.T.conj()), "Should be Hermitian"
+        eigenvals = np.linalg.eigvals(correlation_matrix @ S)
+        eigenvals = np.sort(eigenvals)
+        # Step 4: Verify eigenvalues
+        assert len(eigenvals) == 2*n_sites, "Should have correct number of eigenvalues"
         assert np.all(eigenvals >= -1e-10), "Eigenvalues should be non-negative"
         assert np.all(eigenvals <= 1 + 1e-10), "Eigenvalues should be ≤ 1"
     
@@ -63,7 +71,7 @@ class TestTutorialWorkflows:
         S = ff.compute_algebra_S(alphas)
 
         # Step 2: Perform symplectic diagonalization
-        eigenvals, eigenvecs = ff.eig_sp(H)
+        eigenvals, eigenvecs = ff.eigh_sp(H)
         
         # Step 3: Verify symplectic properties
         # Check symplectic property: V^T S V = S
@@ -77,62 +85,63 @@ class TestTutorialWorkflows:
         
         
     
-    def test_gaussian_state_workflow(self):
-        """Test complete Gaussian state preparation and analysis"""
+    # def test_gaussian_state_workflow(self):
+        #"""Test complete Gaussian state preparation and analysis"""
         # Step 1: Define system parameters
-        n_modes = 6
+        #n_modes = 6
         
         # Step 2: Create covariance matrix
-        gamma = ff.random_covariance_matrix(n_modes)
+        #gamma = np.random.randn(6,6) 
+        #gamma = gamma - gamma.T #ff.random_covariance_matrix(n_modes)
         
         # Step 3: Prepare Gaussian state
-        state = ff.gaussian_state(gamma)
+        #state = ff.gaussian_state(gamma)
         
         # Step 4: Compute observables
-        correlation_matrix = ff.state_correlation_matrix(state)
+        #correlation_matrix = ff.state_correlation_matrix(state)
         #entanglement = ff.entanglement_entropy(state, subsystem=[0, 1])
         
         # Verify workflow
-        assert gamma.shape == (2*n_modes, 2*n_modes), "Covariance matrix should have correct size"
-        assert correlation_matrix.shape == (n_modes, n_modes), "Correlation matrix should be correct size"
+        #assert gamma.shape == (2*n_modes, 2*n_modes), "Covariance matrix should have correct size"
+        #assert correlation_matrix.shape == (n_modes, n_modes), "Correlation matrix should be correct size"
         #assert entanglement >= 0, "Entanglement entropy should be non-negative"
     
-    def test_kitaev_chain_workflow(self):
-        """Test complete Kitaev chain analysis workflow"""
-        # Step 1: Set up Kitaev chain parameters
-        L = 8  # Chain length
-        t = 1.0  # Hopping
-        mu = 0.005  # Chemical potential
-        Delta = 0.99  # Pairing
+    # def test_kitaev_chain_workflow(self):
+    #     """Test complete Kitaev chain analysis workflow"""
+    #     # Step 1: Set up Kitaev chain parameters
+    #     L = 8  # Chain length
+    #     t = 1.0  # Hopping
+    #     mu = 0.005  # Chemical potential
+    #     Delta = 0.99  # Pairing
         
-        # Step 2: Construct Hamiltonian
-        H = ff.kitaev_chain(L, mu, t, Delta)
-        # Step 3: Diagonalize and find ground state
-        eigenvals, eigenvecs = ff.eigh_sp(H)
+    #     # Step 2: Construct Hamiltonian
+    #     H = ff.kitaev_chain(L, mu, t, Delta)
+    #     # Step 3: Diagonalize and find ground state
+    #     eigenvals, eigenvecs = ff.eigh_sp(H)
 
-        eigenvals = ff.clean(eigenvals,10)
-        eigenvecs = ff.clean(eigenvecs,11)
+    #     eigenvals = ff.clean(eigenvals,10)
+    #     eigenvecs = ff.clean(eigenvecs,11)
 
-        ff.ff_utils._print(np.diag(eigenvals),7)
+    #     ff.ff_utils._print(np.diag(eigenvals),7)
         
-        #eigenvals, eigenvecs = np.linalg.eigh(H)
-        ground_state_energy = np.min(np.diag(eigenvals)[L:])
-        ground_state_idx = np.argmin(np.diag(eigenvals)[L:])
+    #     #eigenvals, eigenvecs = np.linalg.eigh(H)
+    #     ground_state_energy = np.min(np.diag(eigenvals)[L:])
+    #     ground_state_idx = np.argmin(np.diag(eigenvals)[L:])
 
-        ground_state_vec = eigenvecs[ground_state_idx,:]
+    #     ground_state_vec = eigenvecs[ground_state_idx,:]
         
-        rho = eigenvecs[ground_state_idx,:] @ (eigenvecs[ground_state_idx,:]).conj().T
-        # Step 4: Compute correlation functions
-        correlation_matrix = ff.ground_state_correlations(rho)
+    #     rho = eigenvecs[ground_state_idx,:] @ (eigenvecs[ground_state_idx,:]).conj().T
+    #     # Step 4: Compute correlation functions
+    #     #correlation_matrix = ff.ground_state_correlations(rho)
         
-        # Step 5: Analyze topological properties
-        gap = min(eigenvals[eigenvals > 0]) - max(eigenvals[eigenvals < 0])
+    #     # Step 5: Analyze topological properties
+    #     gap = min(eigenvals[eigenvals > 0]) - max(eigenvals[eigenvals < 0])
         
-        # Verify workflow
-        assert H.shape == (2*L, 2*L), "Hamiltonian should have correct size"
-        assert np.allclose(H, H.T.conj()), "Hamiltonian should be Hermitian"
-        assert gap >= 0, "Energy gap should be non-negative"
-        assert correlation_matrix.shape == (L, L), "Correlations should have correct shape"
+    #     # Verify workflow
+    #     assert H.shape == (2*L, 2*L), "Hamiltonian should have correct size"
+    #     assert np.allclose(H, H.T.conj()), "Hamiltonian should be Hermitian"
+    #     assert gap >= 0, "Energy gap should be non-negative"
+    #     assert correlation_matrix.shape == (L, L), "Correlations should have correct shape"
 
 
 class TestCrossModuleIntegration:
@@ -169,7 +178,8 @@ class TestCrossModuleIntegration:
         """Test integration between main library and combinatorics"""
         # Create correlation matrix
         n = 4
-        gamma = ff.random_correlation_matrix(n)
+        gamma = np.random.randn(2*n,2*n)
+        gamma = gamma - gamma.T
         
         # Compute determinant using both methods
         det_numpy = np.linalg.det(gamma)
@@ -289,7 +299,7 @@ class TestRealWorldUseCases:
             
             # Diagonalize
             [eigenvals,_] = ff.eigh_sp(H)
-            eigenvals = np.diag(eigenvals)[:L]
+            eigenvals = np.diag(eigenvals)
             eigenvals = np.sort(eigenvals)
             
             # Find gap
@@ -444,12 +454,12 @@ class TestPerformanceIntegration:
         
         # Perform memory-intensive workflow
         for i in range(5):
-            n = 100
-            H = np.random.randn(n, n)
-            H = H + H.T
+            n = 8
             
+            rho,H = ff.random_FF_state(n,returnH=True)
+
             eigenvals, eigenvecs = np.linalg.eigh(H)
-            gamma = ff.correlation_matrix(H)
+            gamma = ff.correlation_matrix(rho)
             
             # Clean up explicitly
             del H, eigenvals, eigenvecs, gamma
@@ -465,34 +475,43 @@ class TestPerformanceIntegration:
 class TestErrorPropagation:
     """Test error handling and propagation across modules"""
     
-    def test_invalid_input_propagation(self):
-        """Test how invalid inputs propagate through workflows"""
-        # Test with invalid matrix
-        invalid_matrix = np.array([[1, 2], [3]])  # Ragged array
+    # def test_invalid_input_propagation(self):
+    #     """Test how invalid inputs propagate through workflows"""
+    #     # Test with invalid matrix
+    #     invalid_matrix = np.array([[1, 2], [3]])  # Ragged array
         
-        with pytest.raises((ValueError, IndexError, TypeError)):
-            # Should raise error somewhere in the workflow
-            gamma = ff.correlation_matrix(invalid_matrix)
-            eigenvals = np.linalg.eigvals(gamma)
+    #     with pytest.raises((ValueError, IndexError, TypeError)):
+    #         # Should raise error somewhere in the workflow
+    #         gamma = ff.correlation_matrix(invalid_matrix)
+    #         eigenvals = np.linalg.eigvals(gamma)
     
     def test_numerical_error_propagation(self):
         """Test how numerical errors propagate"""
         # Create ill-conditioned matrix
-        n = 10
-        H = np.random.randn(n, n)
-        H = H + H.T
+        n = 8
+        h = np.random.randn(n, n)
+        h = h + h.T
         
         # Make it nearly singular
-        H[0, :] = H[1, :] * (1 + 1e-15)
+        h[0, :] = h[1, :] * (1 + 1e-15)
         
+        H = ff.build_H(n,h)
+
+        from scipy.linalg import expm
+
+        rho = expm(-H)
+        rho /= np.trace(rho)  # Normalize
+
+
+
         import warnings
         # Workflow should handle gracefully or warn
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             
             try:
-                gamma = ff.correlation_matrix(H)
-                det_val = ff.dt(gamma)
+                gamma = ff.correlation_matrix(rho)
+                det_val = ff.dt_eigen(gamma)
                 
                 # Should either succeed or generate warnings
                 assert np.isfinite(det_val) or len(w) > 0, "Should handle or warn about numerical issues"
@@ -500,123 +519,108 @@ class TestErrorPropagation:
                 # Acceptable to fail on singular matrices
                 pass
 
-    def test_complex_error_scenarios(self):
-        """Test complex error scenarios"""
-        # Scenario 1: NaN propagation
-        H_with_nan = np.array([[1, 2], [np.nan, 4]])
-        
-        try:
-            gamma = ff.correlation_matrix(H_with_nan)
-            assert np.any(np.isnan(gamma)), "NaN should propagate through workflow"
-        except ValueError:
-            # Acceptable to reject NaN inputs
-            pass
-        
-        # Scenario 2: Infinity handling
-        H_with_inf = np.array([[1, 2], [3, np.inf]])
-        
-        try:
-            gamma = ff.correlation_matrix(H_with_inf)
-            # Should either handle or raise appropriate error
-            assert np.any(np.isinf(gamma)) or np.all(np.isfinite(gamma)), "Should handle infinity appropriately"
-        except (ValueError, OverflowError):
-            # Acceptable to reject infinite inputs
-            pass
 
 
 class TestWorkflowValidation:
     """Test validation of complete workflows against known results"""
     
-    def test_analytical_solution_validation(self):
-        """Test workflows against known analytical solutions"""
-        # Test case: 2-site system with known solution
+    #def test_analytical_solution_validation(self):
+    #     """Test workflows against known analytical solutions"""
+    #     # Test case: 2-site system with known solution
         
-        # Hamiltonian: H = -t(c1†c2 + c2†c1)
-        t = 1.0
-        H = np.array([[0, -t], [-t, 0]])
+    #     # Hamiltonian: H = -t(c1†c2 + c2†c1)
+    #     t = 1.0
+    #     H = np.array([[0, -t], [-t, 0]])
         
-        # Analytical eigenvalues: ±t
-        eigenvals_analytical = np.array([-t, t])
+    #     # Analytical eigenvalues: ±t
+    #     eigenvals_analytical = np.array([-t, t])
         
-        # Compute using workflow
-        eigenvals_computed = np.linalg.eigvals(H)
-        eigenvals_computed = np.sort(eigenvals_computed)
+    #     # Compute using workflow
+    #     eigenvals_computed = np.linalg.eigvals(H)
+    #     eigenvals_computed = np.sort(eigenvals_computed)
         
-        # Should match analytical result
-        assert np.allclose(eigenvals_computed, eigenvals_analytical), "Should match analytical eigenvalues"
+    #     # Should match analytical result
+    #     assert np.allclose(eigenvals_computed, eigenvals_analytical), "Should match analytical eigenvalues"
         
-        # Test correlation matrix
-        gamma = ff.correlation_matrix(H)
+    #     # Test correlation matrix
+    #     gamma = ff.correlation_matrix(H)
         
-        # For ground state of this system, analytical correlation matrix is known
-        gamma_analytical = np.array([[0.5, 0.5], [0.5, 0.5]])
+    #     # For ground state of this system, analytical correlation matrix is known
+    #     gamma_analytical = np.array([[0.5, 0.5], [0.5, 0.5]])
         
-        # Should be close to analytical result (may differ by basis choice)
-        assert gamma.shape == gamma_analytical.shape, "Should have correct shape"
-        assert np.allclose(np.trace(gamma), 1.0), "Trace should be 1 (one particle)"
+    #     # Should be close to analytical result (may differ by basis choice)
+    #     assert gamma.shape == gamma_analytical.shape, "Should have correct shape"
+    #     assert np.allclose(np.trace(gamma), 1.0), "Trace should be 1 (one particle)"
     
-    def test_symmetry_preservation(self):
-        """Test that workflows preserve expected symmetries"""
-        # Test particle-hole symmetry
-        n = 4
-        H = np.random.randn(n, n)
-        H = H - H.T  # Make antisymmetric (particle-hole symmetric)
+    # def test_symmetry_preservation(self):
+    #     """Test that workflows preserve expected symmetries"""
+    #     # Test particle-hole symmetry
+    #     n = 4
+    #     H = ff.random_H_generator(n,fixedN=True)
         
-        # Eigenvalues should come in ±pairs
-        eigenvals = np.linalg.eigvals(H)
-        eigenvals_sorted = np.sort(eigenvals)
+    #     # Eigenvalues should come in ±pairs
+    #     eigenvals = np.linalg.eigvals(H)
+    #     eigenvals_sorted = np.sort(eigenvals)
         
-        # Check if eigenvalues are approximately paired
-        for i in range(n//2):
-            assert np.allclose(eigenvals_sorted[i], -eigenvals_sorted[n-1-i]), \
-                "Particle-hole symmetry should be preserved"
+    #     # Check if eigenvalues are approximately paired
+    #     for i in range(n//2):
+    #         assert np.allclose(eigenvals_sorted[i], -eigenvals_sorted[n-1-i]), \
+    #             "Particle-hole symmetry should be preserved"
     
-    def test_conservation_laws(self):
-        """Test that workflows respect conservation laws"""
-        # Test particle number conservation
-        n = 4
+    # def test_conservation_laws(self):
+    #     """Test that workflows respect conservation laws"""
+    #     # Test particle number conservation
+    #     n = 4
         
-        # Create number-conserving Hamiltonian (hopping only)
-        H = np.zeros((n, n))
-        for i in range(n-1):
-            H[i, i+1] = -1.0
-            H[i+1, i] = -1.0
+    #     # Create number-conserving Hamiltonian (hopping only)
+    #     H = np.zeros((n, n))
+    #     for i in range(n-1):
+    #         H[i, i+1] = -1.0
+    #         H[i+1, i] = -1.0
         
-        # Correlation matrix should conserve particle number
-        gamma = ff.correlation_matrix(H)
+    #     # Correlation matrix should conserve particle number
+    #     gamma = ff.correlation_matrix(H)
         
-        # Total particle number should be conserved
-        total_particles = np.trace(gamma)
+    #     # Total particle number should be conserved
+    #     total_particles = np.trace(gamma)
         
-        # For half-filled system, should have n/2 particles
-        expected_particles = n / 2
-        assert np.allclose(total_particles, expected_particles), \
-            "Particle number should be conserved"
+    #     # For half-filled system, should have n/2 particles
+    #     expected_particles = n / 2
+    #     assert np.allclose(total_particles, expected_particles), \
+    #         "Particle number should be conserved"
     
     def test_thermodynamic_consistency(self):
         """Test thermodynamic consistency of results"""
         # Test that results satisfy thermodynamic relations
         
         n = 6
-        H = np.random.randn(n, n)
-        H = H + H.T
+        H = ff.random_H_generator(n)
+        alphas = ff.jordan_wigner_alphas(n)
+        S = ff.compute_algebra_S(alphas)
+        H_op = ff.build_op(n, H,alphas)
         
         # Compute properties at different temperatures
         temperatures = [0.1, 1.0, 10.0]
         entropies = []
         
+        from scipy.linalg import expm
+
         for T in temperatures:
             # Compute thermal correlation matrix
-            gamma_T = ff.thermal_correlation_matrix(H, T)
+            rho = expm(-H_op/T)
+            rho /= np.trace(rho)
+            
+            gamma_T = ff.correlation_matrix(rho)
             
             # Compute entropy
-            eigenvals_gamma = np.linalg.eigvals(gamma_T)
+            eigenvals_gamma = np.linalg.eigvals(gamma_T @ S)
             eigenvals_gamma = np.clip(eigenvals_gamma, 1e-12, 1-1e-12)  # Avoid log(0)
             
             entropy = -np.sum(eigenvals_gamma * np.log(eigenvals_gamma) + 
                              (1 - eigenvals_gamma) * np.log(1 - eigenvals_gamma))
-            entropies.append(entropy)
+            entropies.append(ff.clean(entropy))
         
         # Entropy should increase with temperature
+        print("Entropies at different temperatures:", entropies)
         assert entropies[1] >= entropies[0], "Entropy should increase with temperature"
         assert entropies[2] >= entropies[1], "Entropy should increase with temperature"

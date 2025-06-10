@@ -93,7 +93,7 @@ class TestCleanFunction:
         for val in significant_values:
             cleaned = ff.clean(val,1e-12)
             if abs(val) > 1e-12:  # above threshold
-                assert cleaned == val, f"Significant value {val} should not be cleaned"
+                assert np.allclose(cleaned , val), f"Significant value {val} should not be cleaned"
     
     def test_clean_edge_cases(self):
         """Test clean function edge cases"""

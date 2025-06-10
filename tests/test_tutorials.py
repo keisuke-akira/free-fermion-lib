@@ -148,22 +148,41 @@ class TestGraphTheoryTutorial:
             is_planar, _ = nx.check_planarity(G)
             assert is_planar, "Generated graph should be planar"
             
-            # Compute and apply the pfaffian ordering
+            # # Compute and apply the pfaffian ordering
+            # A = nx.adjacency_matrix(G).toarray()
+            # pfo = ff.pfo_algorithm(G, verbose=False)
+            # pfoA = np.multiply(pfo,A)
+            # pfoA = np.triu(pfoA)
+            # pfoA = pfoA - pfoA.T 
+            # pfoA = np.multiply(pfo,A)
+            
+            # # Find perfect matchings
+            # matchings = ff.find_perfect_matchings_brute(G)
+            
+            # # Compute pfaffian (should equal number of matchings)
+            # pf_value = ff.pf(pfoA)
+            
+            # Get adjacency matrix
             A = nx.adjacency_matrix(G).toarray()
-            pfo = ff.pfo_algorithm(G, verbose=False)
+            
+            # Compute and apply the pfaffian ordering
+            pfo = ff.pfo_algorithm(G)
             pfoA = np.multiply(pfo,A)
+
+            # Ensure pfoA is skew-symmetric
             pfoA = np.triu(pfoA)
             pfoA = pfoA - pfoA.T 
-            pfoA = np.multiply(pfo,A)
+            
+            # compute the pfaffian
+            pf_value = ff.pf(pfoA)
             
             # Find perfect matchings
             matchings = ff.find_perfect_matchings_brute(G)
+            nmatchings = len(matchings)
             
-            # Compute pfaffian (should equal number of matchings)
-            pf_value = ff.pf(pfoA)
-            
+
             # Validate results
-            assert len(matchings) == int(abs(pf_value)), \
+            assert nmatchings == int(abs(pf_value)), \
                 "Pfaffian should equal number of perfect matchings"
             assert pfoA.shape[0] == len(G.nodes()), \
                 "PFO matrix should match graph size"
@@ -178,21 +197,29 @@ class TestGraphTheoryTutorial:
         # Create a simple 4-cycle (square)
         G = nx.cycle_graph(4)
         
+        PMs = ff.find_perfect_matchings_brute(G)
+        # Should have 2 perfect matchings: (0,1)(2,3) and (0,3)(1,2)
+        assert len(PMs) == 2, "4-cycle should have 2 perfect matchings"
+
+        
         # Find perfect matchings
         nmatchings = ff.clean(ff.count_perfect_matchings(G))
         
         # A 4-cycle should have exactly 2 perfect matchings
         assert nmatchings == 2, "4-cycle should have 2 perfect matchings"
         
-        # Compute and apply the pfaffian ordering
+        # Get adjacency matrix
         A = nx.adjacency_matrix(G).toarray()
-
-        pfo = ff.pfo_algorithm(G, verbose=False)
+        
+        # Compute and apply the pfaffian ordering
+        pfo = ff.pfo_algorithm(G)
         pfoA = np.multiply(pfo,A)
+
+        # Ensure pfoA is skew-symmetric
         pfoA = np.triu(pfoA)
         pfoA = pfoA - pfoA.T 
-        pfoA = np.multiply(pfo,A)
         
+        # compute the pfaffian
         pf_value = ff.pf(pfoA)
         
         # Verify pfaffian equals number of matchings

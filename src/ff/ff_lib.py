@@ -264,6 +264,54 @@ def build_H(n_sites, A, B=None):
     H[N:, N:] = A
     return H
 
+def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False):
+    """Generate a random free fermion state using a random Hamiltonian.
+    Args:
+        n_sites: The number of sites
+        fixedN: If True, the generator is fixed to a specific N (default: False)
+        seed: Random seed for reproducibility (optional)
+        returnH: If True, return the generator matrix along with rho (default: False)
+    Returns:
+        A normalized free fermion state, rho. If returnH is True, also returns the generator matrix H.
+    """
+    
+    H = random_H_generator(n_sites, fixedN=fixedN, seed=seed)  # Generate a random Hamiltonian
+    H_op = build_op(n_sites, H, jordan_wigner_alphas(n_sites))  # Build the Hamiltonian operator
+
+    rho = expm(-H_op) # Compute the FF state from the Hamiltonian
+    rho = rho/ np.trace(rho)  # Normalize the state density matrix
+    
+    if returnH:
+        return rho, H  # Return both the normalized state density matrix and the generator matrix
+    else:
+        return rho  # Return the normalized state density matrix
+
+def random_H_generator(n_sites, fixedN= False, seed=None):
+    """
+    Generate a random generator matrix for free fermions. Entries are drawn
+    from a standard normal distribution for both real and imaginary parts.
+
+    Args:
+        n_sites: The number of sites
+        fixedN: If True, the generator is fixed to a specific N (default: False)
+        seed: Random seed for reproducibility (optional)
+
+    Returns:
+        A random generator matrix of dimension 2*N for N sites
+    """
+    if seed is not None:
+        np.random.seed(seed)
+
+    A = np.random.randn(n_sites, n_sites) + 1j * np.random.randn(n_sites, n_sites)
+    Z = np.random.randn(n_sites, n_sites) + 1j * np.random.randn(n_sites, n_sites)
+    A = A+ A.conj().T  # make A Hermitian
+    Z = Z - Z.T  # make Z skew-symmetric
+
+    if fixedN:
+        Z = Z*0  # make Z zero if fixedN is True
+    # Build the generator matrix
+    return build_H(n_sites, A, Z)
+
 
 def kitaev_chain(n_sites, mu, t, delta):
             """Create Kitaev chain Hamiltonian."""
@@ -539,6 +587,26 @@ def compute_cov_matrix(rho, n_sites=None, alphas=None):
 
     return Covf
 
+def correlation_matrix(rho):
+    """
+    Calculates the following two-point correlation matrix
+
+    Γ = ⟨vec α vec α^t⟩
+    Γ_ij = Tr[rho α_i α_j]
+
+    for JW fermionic operators in the [a^+ a] ordering
+
+    Args:
+        rho: should be a [2**n_sites x 2**n_sites] matrix
+    
+    Returns:
+        An [2 n_sites x 2 n_sites] correlation matrix
+    """
+    N = rho.shape[0]
+    n_sites = int(np.round(np.log2(N)))
+    alphas = jordan_wigner_alphas(n_sites)
+    
+    return compute_2corr_matrix(rho, n_sites, alphas, conjugation=None)
 
 def compute_2corr_matrix(rho, n_sites, alphas=None, conjugation=None):
     """

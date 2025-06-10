@@ -20,6 +20,7 @@ import numpy as np
 import itertools as it
 import itertools
 from .ff_combinatorics import dt_eigen
+from .ff_utils import clean
 
 
 
@@ -191,8 +192,10 @@ def generate_random_planar_graph(n, seed=None):
     for _ in range(max_attempts):
         G = nx.gnm_random_graph(
             n, random.randint(n - 1, 2 * n - 3)
-        )  # Generate a random graph
-        if nx.check_planarity(G)[0]:
+        ) 
+        
+        # Generate a random graph
+        if nx.check_planarity(G)[0] and nx.is_connected(G):
             return G
     return None  # Return None if no planar graph found within max_attempts
 
@@ -409,7 +412,7 @@ def complete_face(pfo, edges, verbose=False):
         u = min(e[0], e[1])
         v = max(e[0], e[1])
 
-        if np.real(pfo[u, v]) == 0:
+        if np.allclose(np.real(pfo[u, v]),0):
             skip_list.append(e)
             continue
 
@@ -491,7 +494,7 @@ def count_perfect_matchings_planar(graph):
     pfoA = np.triu(pfoA)
     pfoA = pfoA - pfoA.T
 
-    return np.sqrt(dt_eigen(pfoA))
+    return clean(np.sqrt(dt_eigen(pfoA)),10)
 
 
 def find_perfect_matchings_brute(graph):
@@ -570,8 +573,9 @@ def pfo_algorithm(graph, verbose=False):
             print(f"F[{i}]", face)
 
     if not nx.is_tree(H):
-        print("H is not a tree")
-        exit()
+        print(H)
+        assert nx.is_tree(H), "H is not a tree"
+        
 
     # Step 3: Orient edges of T
     for e in T.edges():
