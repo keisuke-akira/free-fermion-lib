@@ -75,20 +75,6 @@ skew_matrix = np.array([[0, 1, -2], [-1, 0, 3], [2, -3, 0]])
 pfaffian_value = pf(skew_matrix)
 ```
 
-## Research Notebooks
-
-The `Research/` directory contains Jupyter notebooks demonstrating various aspects of free fermion theory:
-
-- **Notebook 0**: Combinatorial functions
-- **Notebook 1**: PFO Algorithm implementation
-- **Notebook 2**: Gaussian distributions
-- **Notebook 3**: Gaussian fermions and Wick's theorem
-- **Notebook 4**: Quadratic fermionic operators
-- **Notebooks 5.1-5.2**: FF rotations and theory
-- **Notebook 6**: Gaussian states
-- **Notebook 7**: Symplectic diagonalization
-- **Notebooks 8-11**: Advanced matrix decompositions and covariance matrices
-
 ## Development
 
 ### Running Tests
