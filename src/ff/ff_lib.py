@@ -336,10 +336,10 @@ def random_H_generator(n_sites, fixedN=False, seed=None):
     if seed is not None:
         np.random.seed(seed)
 
-    A = np.random.randn(n_sites, n_sites)
-    A += 1j * np.random.randn(n_sites, n_sites)
-    Z = np.random.randn(n_sites, n_sites)
-    Z += 1j * np.random.randn(n_sites, n_sites)
+    A = (      np.random.randn(n_sites, n_sites)
+        + 1j * np.random.randn(n_sites, n_sites))
+    Z = (      np.random.randn(n_sites, n_sites)
+        + 1j * np.random.randn(n_sites, n_sites))
     A = A + A.conj().T  # make A Hermitian
     Z = Z - Z.T  # make Z skew-symmetric
 
