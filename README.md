@@ -1,6 +1,17 @@
 # Free Fermion Library
 
-A comprehensive Python library for working with free fermion quantum systems, providing tools for combinatorial functions, graph theory algorithms, and quantum physics utilities.
+A basic Python library for working with free fermion quantum systems, providing tools for combinatorial functions, graph theory algorithms, and quantum physics utilities.  This work was supported by the U.S. Department of Energy, Office of Basic Energy Sciences, under Award DE-SC0019374 and by Army Research Office grant W911NF2410043
+
+
+| Documentation | Code Identifier | Paper | License |
+| :---: | :---: | :---: | :---: |
+| [![][Doc-l-img]][Doc-latest] | [![][Zenodo-DOI-img]][Zenodo-DOI-url] |[![][arXiv-img]][arXiv-url] | [![License: MIT][License-img]][License-url] |
+
+
+
+| Development Status |
+|:---:|
+| [![codecov][codecov-img]][codecov-url] [![CI][GA-CI-img]][GA-CI-url] [![][New-commits-img]][New-commits-url] |
 
 ## Features
 
