@@ -36,7 +36,7 @@ def _print(obj, k=9):
     """
     try:
         val = np.array(obj)
-    
+
         # get current precision
         p = np.get_printoptions()["precision"]
 
@@ -53,26 +53,25 @@ def _print(obj, k=9):
 
         # reset precision
         np.set_printoptions(precision=p)
-        return 
-    except:
+        return
+    finally:
         return print(obj)
 
 
 def clean(obj, threshold=1e-6):
     """
     Clean small numerical values from arrays or matrices.
-    
+
     Args:
         obj: array, scalar, NumPy array or matrix
         threshold: Values below this threshold are set to zero
-    
+
     Note: if threshold is an integer, it will be converted to 10^-threshold
 
     Returns:
         Cleaned obj with small values set to zero and rounded according to the threshold.
     """
-    
-    
+
     if isinstance(threshold, int):
         # If threshold is an integer, convert to 10^-threshold
         ndigits = threshold
@@ -126,11 +125,11 @@ def clean(obj, threshold=1e-6):
 def formatted_output(obj, precision=6):
     """
     Format numerical output with specified precision.
-    
+
     Args:
         obj: Object to format
         precision: Number of decimal places
-        
+
     Returns:
         Formatted string representation
     """
@@ -144,7 +143,7 @@ def formatted_output(obj, precision=6):
             return f"{obj:.{precision}f}"
     else:
         return str(obj)
-    
+
 
 def generate_random_bitstring(n, k):
     """Generates a random bit string of length n with Hamming weight k.
@@ -170,11 +169,11 @@ def generate_random_bitstring(n, k):
 
 def kron_plus(a, b):
     """Computes the direct sum of two matrices
-    
+
     Args:
         a: First matrix
         b: Second matrix
-        
+
     Returns:
         Direct sum matrix [[a, 0], [0, b]]
     """

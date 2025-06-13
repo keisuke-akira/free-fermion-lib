@@ -1,7 +1,7 @@
 """
 Free Fermion Combinatorial Functions Module
 
-Core combinatorial matrix functions including determinants, pfaffians, 
+Core combinatorial matrix functions including determinants, pfaffians,
 permanents, and hafnians.
 
 Copyright 2025 James.D.Whitfield@dartmouth.edu
@@ -15,10 +15,10 @@ import numpy as np
 
 def sgn(permutation):
     """Computes the sign of a permutation by counting inversions.
-    
+
     Args:
         permutation: List or array representing a permutation
-        
+
     Returns:
         1 if even number of inversions, -1 if odd
     """
@@ -35,9 +35,10 @@ def sgn(permutation):
 def pf(A):
     r"""Computes pfaffian via combinatorial formula:
 
-    Given :math:`A` of even dimension :math:`N = 2 n_e` we have the pfaffian as:
+    Given :math:`A` of dimension :math:`N = 2 n_e` we have the pfaffian as:
 
-    .. math:: pf(A) =  \sum_{\sigma\in S_N}^{N!}  sgn(\sigma) W_\sigma(A)/(2^{n_e} n_e!)
+    .. math::
+        pf(A)= \sum_{\sigma\in S_N}^{N!} sgn(\sigma) W_\sigma(A)/(2^{n_e} n_e!)
 
     Where the weight of matching :math:`\sigma` is given by
 
@@ -45,7 +46,7 @@ def pf(A):
 
     Args:
         A: Square matrix (numpy array or array-like)
-        
+
     Returns:
         Pfaffian value (complex or real)
     """
@@ -72,7 +73,7 @@ def pf(A):
 
 
 def hf(A):
-    """Computes hafian via combinatorial formula.
+    r"""Computes hafian via combinatorial formula.
 
     Given :math:`A` of even dimension :math:`N = 2 n_e` we have the hafian as:
 
@@ -82,10 +83,10 @@ def hf(A):
     Where the weight of matching :math:`\sigma` is given by
 
     .. math:: W_\sigma(A) = \prod_{i=0}^{n_e} A_{\sigma(2i), \sigma(2i+1)}
-     
+
     Args:
         A: Square matrix (numpy array or array-like)
-        
+
     Returns:
         Hafnian value (complex or real)
     """
@@ -112,7 +113,7 @@ def hf(A):
 
 
 def pt(A):
-    """Computes permanent via combinatorial formula.
+    r"""Computes permanent via combinatorial formula.
 
     Given :math:`A` of dimension :math:`N` we have the permanent as:
 
@@ -124,7 +125,7 @@ def pt(A):
 
     Args:
         A: Square matrix (numpy array or array-like)
-        
+
     Returns:
         Permanent value (complex or real)
     """
@@ -144,7 +145,7 @@ def pt(A):
 
 
 def dt(A):
-    """Computes determinant via combinatorial formula.
+    r"""Computes determinant via combinatorial formula.
 
     Given :math:`A` of dimension :math:`N` we have the determinant as:
 
@@ -156,7 +157,7 @@ def dt(A):
 
     Args:
         A: Square matrix (numpy array or array-like)
-        
+
     Returns:
         Determinant value (complex or real)
     """
@@ -176,10 +177,10 @@ def dt(A):
 
 
 def dt_eigen(A):
-    """
+    r"""
     Computes the determinant of a matrix using eigenvalue decomposition.
 
-    
+
     .. math:: dt(A) = \prod_{i=0}^{n-1} \lambda_i
 
     with :math:`\lambda_i` the eigenvalues of :math:`A`.
@@ -188,7 +189,7 @@ def dt_eigen(A):
         A: A NumPy array representing the square matrix.
 
     Returns:
-        The determinant of the matrix. Returns None if the input is not a 
+        The determinant of the matrix. Returns None if the input is not a
         square matrix or if eigenvalue decomposition fails.
     """
     try:
