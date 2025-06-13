@@ -32,7 +32,8 @@ __all__ = [
     'build_V', 'build_H', 'build_Omega', 'build_reordering_xx_to_xp',
     'build_K', 'is_symp', 'check_canonical_form', 'generate_gaussian_state',
     'build_op', 'compute_cov_matrix', 'compute_2corr_matrix', 'compute_algebra_S',
-    'is_matchgate', 'wick_contraction', 'eigh_sp', 'eigv_sp', 'eigm_sp_can', 'eigm_sp',
+    'is_matchgate', 'eigh_sp', 'eigv_sp', 'eigm_sp_can', 'eigm_sp',
+    'random_FF_state', 'random_H_generator', 'kitaev_chain', 'correlation_matrix',
     
     # Combinatorial functions from ff_combinatorics
     'sgn', 'pf', 'hf', 'pt', 'dt', 'dt_eigen',
@@ -40,8 +41,9 @@ __all__ = [
     # Graph theory functions from ff_graph_theory
     'plot_graph_with_edge_weights', 'generate_random_planar_graph',
     'plot_planar_embedding', 'dual_graph_H', 'faces', 'complete_face',
-    'find_perfect_matchings', 'pfo_algorithm', 'compute_tree_depth',
+    'count_perfect_matchings', 'count_perfect_matchings_planar', 'find_perfect_matchings_brute',
+    'pfo_algorithm', 'compute_tree_depth',
     
     # Utility functions from ff_utils
-    '_print', 'clean', 'formatted_output', 'generate_random_bitstring', 'kron_plus'
+    'print_custom', 'clean', 'formatted_output', 'generate_random_bitstring', 'kron_plus'
 ]

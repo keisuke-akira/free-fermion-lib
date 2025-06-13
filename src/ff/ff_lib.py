@@ -211,12 +211,15 @@ def _perform_rotation(C, alphas, verbose=False):
 
 
 def build_V(n_sites, A, Z=None):
-    """
+    r"""
     Build the generator V matrix of dimension 2*N for N sites.
 
-    V = [[-Z* & A ]
-         [-A* & Z]]
-
+    .. math::
+     V=\begin{bmatrix}
+     -Z^* & A \\
+     -A^* & Z
+     \end{bmatrix}
+    
     Args:
         n_sites: The number of sites
         A: The A coefficient matrix, [N x N]
@@ -240,12 +243,15 @@ def build_V(n_sites, A, Z=None):
 
 
 def build_H(n_sites, A, B=None):
-    """
+    r"""
     Build the H block coefficient matrix of dimension 2*N for N sites.
 
-    The output is organized as [[-A.conj(), B],
-                                [-B.conj(), A]]
-    
+    .. math::
+     H=\begin{bmatrix}
+     -A^* & B \\
+     -B^* & A
+     \end{bmatrix}
+
     If A = A.conj().T and B = -B.T then the output is compatible with
     alphas = jordan_wigner_alphas(n_sites)
 
@@ -338,11 +344,14 @@ def kitaev_chain(n_sites, mu, t, delta):
 
 
 def build_Omega(N):
-    """
+    r"""
     Build the Omega matrix of dimension 2*N for N sites.
 
-    Omega = (1/√2) * [[Id,     Id ],
-                      [i*Id, -i*Id]]
+    .. math::
+      \Omega = \frac{1}{\sqrt{2}} \begin{bmatrix}
+      \mathbf{1} & \mathbf{1} \\
+      i \mathbf{1} & -i \mathbf{1}
+      \end{bmatrix}
 
     Args:
         N: The number of sites
@@ -405,15 +414,20 @@ def build_K(n_sites):
 
 
 def is_symp(U):
-    """
+    r"""
     Function checks if U is symplectic
 
     U is symplectic if U S U^T = S
 
     A known canonical form is:
 
-    U = [[ s , t* ]
-         [ t , s* ]]
+    .. math:: 
+     U = \begin{bmatrix}
+             s & t^* \\
+             t & s^*
+         \end{bmatrix}  
+    
+    where s and t are square matrices of dimension N.            
          
     Args:
         U: Matrix to check for symplectic property
@@ -817,9 +831,9 @@ def eigh_sp(H):
         A tuple with
         eigenvalues: (2N) ndarray
         eigenvectors: (2N,2N) ndarray
-            Ortho-normal eigenvectors arranged in the form
-            U = [[ s , t ],
-                 [t*, s*]]
+            Ortho-normal eigenvectors arranged in the form 
+            :math:`\begin{pmatrix} s & t\\t^* & s^* \end{pmatrix}`
+            
     """
     n_sites = H.shape[0] // 2
 
@@ -940,18 +954,14 @@ def eigv_sp(V):
 
     Parameters:
         V: (2N, 2N) array
-            Should be of the form
-                [[-B.conj(), A],
-                 [-A.conj(), B]]
+            Should be of the form :math:`V = \begin{pmatrix}-B^* & A\\ -A^* & B\end{pmatrix}`
             with A = A† and B = -B^T
 
     Returns:
         A tuple with
         eigenvalues: (2N) ndarray in :math:`L_Y` form
         eigenvectors: (2N,2N) ndarray
-            Ortho-normal eigenvectors arranged in the form
-                U = [[ s , t ],
-                     [t*, s*]]
+            Ortho-normal eigenvectors arranged in the form :math:`U = \begin{pmatrix} s & t\\ t^* & s^* \end{pmatrix}`
             such that U.T @ V @ U = L_Y
     """
     n_sites = V.shape[0] // 2

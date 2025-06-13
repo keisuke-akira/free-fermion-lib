@@ -9,6 +9,20 @@ Licensed under MIT License.
 
 import numpy as np
 
+def print_custom(obj, k=9):
+    """Custom print function with small number suppression
+
+    Args:
+        obj: Any object to be printed
+        k: The number of decimal places to print
+
+    Returns:
+        None
+    """
+    if isinstance(obj, (int, float, complex,list, np.ndarray, np.matrix)):
+        _print(obj, k)
+    else:
+        print(obj)
 
 def _print(obj, k=9):
     """Printing with small number suppression (using numpy printoptions)
@@ -49,56 +63,65 @@ def clean(obj, threshold=1e-6):
     Clean small numerical values from arrays or matrices.
     
     Args:
-        obj: NumPy array or matrix to clean
+        obj: array, scalar, NumPy array or matrix
         threshold: Values below this threshold are set to zero
     
     Note: if threshold is an integer, it will be converted to 10^-threshold
 
     Returns:
-        Cleaned array with small values set to zero
+        Cleaned obj with small values set to zero and rounded according to the threshold.
     """
-
-    if threshold>1:
-        #assume that an integer number of decimal places has been requested
-        threshold=10**(-threshold)
-
-    approx_obj = np.round(obj / threshold) * threshold
-    if np.allclose(approx_obj,obj,threshold):
-        obj = approx_obj
-
-
-    if hasattr(obj, 'real') and hasattr(obj, 'imag'):
-        # Handle complex arrays
-
-        #clean the arrays
-        real_part = np.where(np.abs(obj.real) < threshold, 0, obj.real)
-        imag_part = np.where(np.abs(obj.imag) < threshold, 0, obj.imag)
-        
-        
-        #reduce to scalars as needed
-        if real_part.size == 1:
-            real_part = real_part.item()
-
-        if imag_part.size == 1:
-            imag_part = imag_part.item()
-        
-        #cast to real if there is no imaginary part      
-        if np.allclose(imag_part,0):
-            #make it real
-            return real_part
-        else:
-            #return the cleaned arrays
-            return real_part + 1j * imag_part
+    
+    
+    if isinstance(threshold, int):
+        # If threshold is an integer, convert to 10^-threshold
+        ndigits = threshold
+        threshold = 10**(-threshold)
     else:
-        # Handle real arrays
-        real_part = np.where(np.abs(obj) < threshold, 0, obj)
+        ndigits = -round(np.log10(threshold))
 
-        #reduce to scalars
-        if real_part.size == 1:
-            real_part = real_part.item()
+    if isinstance(obj,list):
+        # If it's a list, convert to numpy array
+        obj_array = np.array(obj)
+        obj_array = np.round(obj_array, ndigits)
+        # Set small values to zero
+        obj_array[np.abs(obj_array) < threshold] = 0
+        return obj_array.tolist()
 
-        return real_part
+    elif isinstance(obj, (np.matrix, np.ndarray)):
+        # If it's a numpy matrix or array, ensure it's a numpy array
+        if hasattr(obj, 'imag'):  # if complex, check for small imaginary part
+            # If it's complex, check the imaginary part
+            if np.all(np.abs(obj.imag) < threshold):
+                # If the imaginary part is small, return only the real part
+                return np.round(obj.real, ndigits)
+        # Round the array and set small values to zero
+        obj = np.round(obj, ndigits)
+        obj[np.abs(obj) < threshold] = 0
+        return obj
 
+    if isinstance(obj,str):
+        if obj.replace('.', '', 1).isnumeric():
+            # If it's a numeric string, convert to float
+            obj = float(obj)
+            obj = np.round(obj, ndigits)
+            return str(obj)
+        else:
+            # If it's a non-numeric string, return as is
+            return obj
+
+    elif isinstance(obj, (int, float)):
+        return np.round(obj, ndigits)
+
+    elif isinstance(obj, complex):
+        if abs(obj.imag) < threshold:
+            # If the imaginary part is small, return only the real part
+            return np.round(obj.real, ndigits)
+        else:
+            # If the imaginary part is significant, return the complex number rounded
+            return np.round(obj, ndigits)        
+    else:
+        raise TypeError("Unsupported type for cleaning: {}".format(type(obj)))
 
 def formatted_output(obj, precision=6):
     """
