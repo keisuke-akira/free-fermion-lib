@@ -12,12 +12,13 @@ Test categories:
 - Performance Examples (Large system benchmarks)
 """
 
-import pytest
-import numpy as np
-import networkx as nx
-import time
-import sys
 import os
+import sys
+import time
+
+import networkx as nx
+import numpy as np
+import pytest
 
 # Import the library
 import ff

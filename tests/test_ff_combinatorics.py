@@ -12,12 +12,13 @@ Test categories:
 - Sign function testing
 """
 
-import pytest
-import numpy as np
 import itertools
 import math
-import sys
 import os
+import sys
+
+import numpy as np
+import pytest
 
 # Import the library
 import ff

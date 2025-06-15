@@ -12,12 +12,13 @@ Test categories:
 - Error propagation tests
 """
 
-import pytest
-import numpy as np
-import networkx as nx
-import sys
 import os
+import sys
 import time
+
+import networkx as nx
+import numpy as np
+import pytest
 
 # Import the library
 import ff

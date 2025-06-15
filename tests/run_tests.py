@@ -18,19 +18,19 @@ Options:
     --report: Generate detailed test report
 """
 
-import sys
-import os
 import argparse
-import time
-import subprocess
 import json
+import os
+import subprocess
+import sys
+import time
 from pathlib import Path
 
 # Add the source directory to Python path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-import pytest
 import numpy as np
+import pytest
 
 # Test categories
 TEST_CATEGORIES = {

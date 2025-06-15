@@ -13,10 +13,11 @@ Test categories:
 - Operator Rotations and Transformations
 """
 
-import pytest
-import numpy as np
-import sys
 import os
+import sys
+
+import numpy as np
+import pytest
 
 # Import the library
 import ff

@@ -12,12 +12,13 @@ Test categories:
 - Error handling and edge cases
 """
 
-import pytest
-import numpy as np
 import io
 import sys
-from contextlib import redirect_stdout, redirect_stderr
 import warnings
+from contextlib import redirect_stderr, redirect_stdout
+
+import numpy as np
+import pytest
 
 # Import the library
 import ff

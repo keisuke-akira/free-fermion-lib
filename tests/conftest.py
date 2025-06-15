@@ -4,10 +4,11 @@ Pytest configuration and fixtures for Free Fermion Library tests
 This module provides common fixtures and configuration for all test modules.
 """
 
-import pytest
-import numpy as np
-import sys
 import os
+import sys
+
+import numpy as np
+import pytest
 
 # Add the src directory to the path so we can import ff
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))

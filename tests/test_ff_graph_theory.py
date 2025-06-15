@@ -12,12 +12,13 @@ Test categories:
 - Performance and edge cases
 """
 
-import pytest
-import numpy as np
-import networkx as nx
 import itertools
-import sys
 import os
+import sys
+
+import networkx as nx
+import numpy as np
+import pytest
 
 # Import the library
 import ff
