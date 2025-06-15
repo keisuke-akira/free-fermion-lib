@@ -19,12 +19,57 @@ __version__ = "1.0.0"
 __author__ = "James D. Whitfield"
 __email__ = "James.D.Whitfield@dartmouth.edu"
 
-from .ff_combinatorics import *
-from .ff_graph_theory import *
+# Combinatorial functions from ff_combinatorics
+from .ff_combinatorics import sgn, pf, hf, pt, dt, dt_eigen
 
-# Import all main functions for easy access
-from .ff_lib import *
-from .ff_utils import *
+# Graph theory functions from ff_graph_theory
+from .ff_graph_theory import (
+    plot_graph_with_edge_weights,
+    generate_random_planar_graph,
+    plot_planar_embedding,
+    dual_graph_H,
+    faces,
+    complete_face,
+    find_perfect_matchings,
+    pfo_algorithm,
+    compute_tree_depth,
+)
+
+# Core quantum physics functions from ff_lib
+from .ff_lib import (
+    permutation_to_matrix,
+    pauli_matrices,
+    jordan_wigner_lowering,
+    jordan_wigner_alphas,
+    jordan_wigner_majoranas,
+    rotate_operators,
+    build_V,
+    build_H,
+    build_Omega,
+    build_reordering_xx_to_xp,
+    build_K,
+    is_symp,
+    check_canonical_form,
+    generate_gaussian_state,
+    build_op,
+    compute_cov_matrix,
+    compute_2corr_matrix,
+    compute_algebra_S,
+    is_matchgate,
+    eigh_sp,
+    eigv_sp,
+    eigm_sp_can,
+    eigm_sp,
+)
+
+# Utility functions from ff_utils
+from .ff_utils import (
+    print_custom,
+    clean,
+    formatted_output,
+    generate_random_bitstring,
+    kron_plus,
+)
 
 # Define what gets imported with "from ff import *"
 __all__ = [
