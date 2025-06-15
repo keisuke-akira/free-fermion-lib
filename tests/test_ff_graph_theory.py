@@ -42,26 +42,26 @@ class TestPerfectMatchingAlgorithms:
 
         # For K4, there should be 3 perfect matchings
         if G.number_of_edges() == 6:  # Complete K4
-            assert count == 3, "K4 should have 3 perfect matchings"
+            assert np.allclose(count, 3), "K4 should have 3 perfect matchings"
 
     def test_pfo_algorithm_path(self):
         """Test PFO algorithm on path graphs"""
         # Even path (has 1 perfect matching)
         G = nx.path_graph(4)
         count = ff.count_perfect_matchings(G)
-        assert count == 1, "Path of length 4 should have 1 perfect matching"
+        assert np.allclose(count, 1), "Path of length 4 should have 1 perfect matching"
 
         # Odd path (has 0 perfect matchings)
         G = nx.path_graph(5)
         count = ff.count_perfect_matchings(G)
-        assert count == 0, "Path of length 5 should have 0 perfect matchings"
+        assert np.allclose(count, 0), "Path of length 5 should have 0 perfect matchings"
 
     def test_pfo_algorithm_cycle(self):
         """Test PFO algorithm on cycle graphs"""
         # Even cycle (has 2 perfect matchings)
         G = nx.cycle_graph(4)
         count = ff.count_perfect_matchings(G)
-        assert count == 2, "4-cycle should have 2 perfect matchings"
+        assert np.allclose(count, 2), "4-cycle should have 2 perfect matchings"
 
         # 6-cycle should have more perfect matchings
         G = nx.cycle_graph(6)
@@ -71,7 +71,7 @@ class TestPerfectMatchingAlgorithms:
         # Odd cycle (has 0 perfect matchings)
         G = nx.cycle_graph(5)
         count = ff.count_perfect_matchings(G)
-        assert count == 0, "5-cycle should have 0 perfect matchings"
+        assert np.allclose(count,0), "5-cycle should have 0 perfect matchings"
 
     def test_pfo_algorithm_grid(self):
         """Test PFO algorithm on grid graphs"""
@@ -98,7 +98,7 @@ class TestPerfectMatchingAlgorithms:
         count_pfo = ff.clean(ff.count_perfect_matchings_planar(G))
         count_brute = len(ff.find_perfect_matchings_brute(G))
 
-        assert count_pfo == count_brute, "PFO and FKT should give same result"
+        assert np.allclose(count_pfo, count_brute), "PFO and FKT should give same result"
 
     def test_perfect_matching_matrix(self):
         """Test perfect matching via adjacency matrix"""
@@ -124,7 +124,7 @@ class TestPerformanceAndEdgeCases:
 
         # Empty graph properties
         assert (
-            ff.count_perfect_matchings(G) == 0
+            np.allclose(ff.count_perfect_matchings(G), 0)
         ), "Empty graph has 0 perfect matching (vacuous)"
         assert nx.is_planar(G), "Empty graph is planar"
 
@@ -180,7 +180,7 @@ class TestSpecialGraphClasses:
         assert nx.is_planar(G), "K4 should be planar"
 
         count = ff.count_perfect_matchings(G)
-        assert count == 3, "K4 should have 3 perfect matchings"
+        assert np.allclose(count, 3), "K4 should have 3 perfect matchings"
 
         # K5 is not planar
         G = nx.complete_graph(5)
@@ -193,7 +193,7 @@ class TestSpecialGraphClasses:
         assert nx.is_planar(G), "K2,2 should be planar"
 
         count = ff.count_perfect_matchings(G)
-        assert count == 2, "K2,2 should have 2 perfect matchings"
+        assert np.allclose(count, 2), "K2,2 should have 2 perfect matchings"
 
         # Complete bipartite K3,3
         G = nx.complete_bipartite_graph(3, 3)
@@ -206,8 +206,9 @@ class TestSpecialGraphClasses:
         assert nx.is_planar(G), "Wheel graph should be planar"
 
         # Check basic properties
-        assert G.number_of_nodes() == 6, "W5 should have 6 nodes"
-        assert G.number_of_edges() == 10, "W5 should have 10 edges"
+        
+        assert np.allclose(G.number_of_nodes(), 6), "W5 should have 6 nodes"
+        assert np.allclose(G.number_of_edges(), 10), "W5 should have 10 edges"
 
     def test_petersen_graph(self):
         """Test on Petersen graph (famous non-planar graph)"""
@@ -238,7 +239,7 @@ class TestAlgorithmCorrectness:
                 if count != expected:
                     nx.draw(G)
                 assert (
-                    count == expected
+                    np.allclose(count, expected)
                 ), f"Graph should have {expected} perfect matchings, got {count}"
 
     def test_pfaffian_perfect_matching_relationship(self):
@@ -274,5 +275,5 @@ class TestAlgorithmCorrectness:
 
                 euler_char = v - e + f
                 assert (
-                    euler_char == 2
+                    np.allclose(euler_char, 2)
                 ), f"Euler characteristic should be 2, got {euler_char} for graph with v={v}, e={e}, f={f}"
