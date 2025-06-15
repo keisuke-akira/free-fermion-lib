@@ -274,6 +274,8 @@ class TestAlgorithmCorrectness:
 
                 euler_char = v - e + f
                 if not np.allclose(euler_char, 2):
-                    print("Euler characteristic should be 2",
-                          f" got {euler_char} for graph with v={v}, e={e}, f={f}")
-                assert False, "Euler characteristic should be 2"
+                    print(
+                        "Euler characteristic should be 2",
+                        f" got {euler_char} for graph with v={v}, e={e}, f={f}",
+                    )
+                    assert False, f"Euler characteristic should be 2; got {euler_char}"

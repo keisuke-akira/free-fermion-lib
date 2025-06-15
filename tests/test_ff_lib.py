@@ -13,7 +13,6 @@ Test categories:
 - Operator Rotations and Transformations
 """
 
-
 import numpy as np
 
 # Import the library
