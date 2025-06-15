@@ -13,7 +13,6 @@ Test categories:
 """
 
 import io
-
 import warnings
 from contextlib import redirect_stdout
 
