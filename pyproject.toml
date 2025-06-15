@@ -143,13 +143,5 @@ ignore_missing_imports = true
 [tool.flake8]
 max-line-length = 88
 extend-ignore = ["E203", "W503"]
-exclude = [
-    ".git",
-    "__pycache__",
-    "build",
-    "dist",
-    ".eggs",
-    "*.egg-info",
-    ".venv",
-    ".tox",
-]
+exclude = [".git", "__pycache__","build","dist",".eggs","*.egg-info",".venv",".tox"]
+per-file-ignores = ['__init__.py:F405,F403']

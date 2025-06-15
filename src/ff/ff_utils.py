@@ -9,6 +9,7 @@ Licensed under MIT License.
 
 import numpy as np
 
+
 def print_custom(obj, k=9):
     """Custom print function with small number suppression
 
@@ -19,10 +20,11 @@ def print_custom(obj, k=9):
     Returns:
         None
     """
-    if isinstance(obj, (int, float, complex,list, np.ndarray, np.matrix)):
+    if isinstance(obj, (int, float, complex, list, np.ndarray, np.matrix)):
         _print(obj, k)
     else:
         print(obj)
+
 
 def _print(obj, k=9):
     """Printing with small number suppression (using numpy printoptions)
@@ -69,17 +71,17 @@ def clean(obj, threshold=1e-6):
     Note: if threshold is an integer, it will be converted to 10^-threshold
 
     Returns:
-        Cleaned obj with small values set to zero and rounded according to the threshold.
+        Cleaned obj with rounded values and small values set to zero.
     """
 
     if isinstance(threshold, int):
         # If threshold is an integer, convert to 10^-threshold
         ndigits = threshold
-        threshold = 10**(-threshold)
+        threshold = 10 ** (-threshold)
     else:
         ndigits = -round(np.log10(threshold))
 
-    if isinstance(obj,list):
+    if isinstance(obj, list):
         # If it's a list, convert to numpy array
         obj_array = np.array(obj)
         obj_array = np.round(obj_array, ndigits)
@@ -89,7 +91,7 @@ def clean(obj, threshold=1e-6):
 
     elif isinstance(obj, (np.matrix, np.ndarray)):
         # If it's a numpy matrix or array, ensure it's a numpy array
-        if hasattr(obj, 'imag'):  # if complex, check for small imaginary part
+        if hasattr(obj, "imag"):  # if complex, check for small imaginary part
             # If it's complex, check the imaginary part
             if np.all(np.abs(obj.imag) < threshold):
                 # If the imaginary part is small, return only the real part
@@ -99,8 +101,8 @@ def clean(obj, threshold=1e-6):
         obj[np.abs(obj) < threshold] = 0
         return obj
 
-    if isinstance(obj,str):
-        if obj.replace('.', '', 1).isnumeric():
+    if isinstance(obj, str):
+        if obj.replace(".", "", 1).isnumeric():
             # If it's a numeric string, convert to float
             obj = float(obj)
             obj = np.round(obj, ndigits)
@@ -118,9 +120,10 @@ def clean(obj, threshold=1e-6):
             return np.round(obj.real, ndigits)
         else:
             # If the imaginary part is significant, return the complex number rounded
-            return np.round(obj, ndigits)        
+            return np.round(obj, ndigits)
     else:
         raise TypeError("Unsupported type for cleaning: {}".format(type(obj)))
+
 
 def formatted_output(obj, precision=6):
     """

@@ -236,7 +236,7 @@ def build_V(n_sites, A, Z=None):
      -Z^* & A \\
      -A^* & Z
      \end{bmatrix}
-    
+
     Args:
         n_sites: The number of sites
         A: The A coefficient matrix, [N x N]
@@ -342,10 +342,8 @@ def random_H_generator(n_sites, fixedN=False, seed=None):
     if seed is not None:
         np.random.seed(seed)
 
-    A = (      np.random.randn(n_sites, n_sites)
-        + 1j * np.random.randn(n_sites, n_sites))
-    Z = (      np.random.randn(n_sites, n_sites)
-        + 1j * np.random.randn(n_sites, n_sites))
+    A = np.random.randn(n_sites, n_sites) + 1j * np.random.randn(n_sites, n_sites)
+    Z = np.random.randn(n_sites, n_sites) + 1j * np.random.randn(n_sites, n_sites)
     A = A + A.conj().T  # make A Hermitian
     Z = Z - Z.T  # make Z skew-symmetric
 
@@ -457,9 +455,9 @@ def is_symp(U):
              s & t^* \\
              t & s^*
          \end{bmatrix}
-    
+
     where s and t are square matrices of dimension N.
-         
+
     Args:
         U: Matrix to check for symplectic property
 
@@ -589,8 +587,7 @@ def build_op(n_sites, R, alphas, verbose=None, direct=False):
         The N-body Hamiltonian operator as a matrix
     """
     if R.shape[0] != 2 * n_sites or R.shape[1] != 2 * n_sites:
-        print("Use `build_H(n_sites,A,np.zeros_like(A))`",
-              "to format input correctly")
+        print("Use `build_H(n_sites,A,np.zeros_like(A))`", "to format input correctly")
 
     # N-body operators
     R_op = np.zeros_like(alphas[0])
@@ -793,8 +790,7 @@ def is_matchgate(M, verbose=False):
     if np.allclose(det_inner, det_corner):
         if verbose:
             print(
-                "Satisfies the matchgate condition, det1=det2=",
-                np.round(det_inner, 4)
+                "Satisfies the matchgate condition, det1=det2=", np.round(det_inner, 4)
             )
         return True
     else:
@@ -873,9 +869,8 @@ def eigh_sp(H):
         A tuple with
         eigenvalues: (2N) ndarray
         eigenvectors: (2N,2N) ndarray
-            Ortho-normal eigenvectors arranged in the form 
+            Ortho-normal eigenvectors arranged in the form
             :math:`\begin{pmatrix} s & t\\t^* & s^* \end{pmatrix}`
-            
     """
     n_sites = H.shape[0] // 2
 
@@ -995,14 +990,16 @@ def eigv_sp(V):
 
     Parameters:
         V: (2N, 2N) array
-            Should be of the form :math:`V = \begin{pmatrix}-B^* & A\\ -A^* & B\end{pmatrix}`
+            Should be of the form
+            :math:`V = \begin{pmatrix}-B^* & A\\ -A^* & B\end{pmatrix}`
             with A = A† and B = -B^T
 
     Returns:
         A tuple with
         eigenvalues: (2N) ndarray in :math:`L_Y` form
         eigenvectors: (2N,2N) ndarray
-            Ortho-normal eigenvectors arranged in the form :math:`U = \begin{pmatrix} s & t\\ t^* & s^* \end{pmatrix}`
+            Ortho-normal eigenvectors arranged in the form
+            :math:`U = \begin{pmatrix} s & t\\ t^* & s^* \end{pmatrix}`
             such that U.T @ V @ U = L_Y
     """
     n_sites = V.shape[0] // 2
