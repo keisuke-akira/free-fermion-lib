@@ -10,6 +10,7 @@ Licensed under MIT License.
 
 import itertools
 import math
+
 import numpy as np
 
 

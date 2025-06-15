@@ -19,10 +19,10 @@ __version__ = "1.0.0"
 __author__ = "James D. Whitfield"
 __email__ = "James.D.Whitfield@dartmouth.edu"
 
-# Import all main functions for easy access
-from .ff_lib import *
 from .ff_combinatorics import *
 from .ff_graph_theory import *
+# Import all main functions for easy access
+from .ff_lib import *
 from .ff_utils import *
 
 # Define what gets imported with "from ff import *"

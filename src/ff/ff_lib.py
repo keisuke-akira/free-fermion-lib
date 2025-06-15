@@ -19,7 +19,8 @@ Copyright 2025 James.D.Whitfield@dartmouth.edu
 
 import numpy as np
 from scipy.linalg import expm, schur
-from .ff_utils import kron_plus, _print
+
+from .ff_utils import _print, kron_plus
 
 
 def permutation_to_matrix(permutation):

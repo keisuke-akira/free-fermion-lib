@@ -14,12 +14,14 @@ Key algorithms:
 Copyright 2025 James.D.Whitfield@dartmouth.edu
 """
 
-import networkx as nx
-import random
-import matplotlib.pyplot as plt
-import numpy as np
-import itertools as it
 import itertools
+import itertools as it
+import random
+
+import matplotlib.pyplot as plt
+import networkx as nx
+import numpy as np
+
 from .ff_combinatorics import dt_eigen
 from .ff_utils import clean
 
