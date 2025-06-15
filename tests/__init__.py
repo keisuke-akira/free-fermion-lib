@@ -2,7 +2,7 @@
 Test suite for the Free Fermion Library
 
 This package contains comprehensive tests for all modules of the Free Fermion Library,
-including unit tests, integration tests, tutorial validation, and performance benchmarks.
+including unit tests, integration tests, and other validations.
 
 Test modules:
     test_tutorials: Validation of tutorial examples from documentation

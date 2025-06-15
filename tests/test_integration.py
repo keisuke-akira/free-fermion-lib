@@ -12,13 +12,10 @@ Test categories:
 - Error propagation tests
 """
 
-import os
-import sys
 import time
 
 import networkx as nx
 import numpy as np
-import pytest
 
 # Import the library
 import ff
@@ -108,8 +105,10 @@ class TestTutorialWorkflows:
     # entanglement = ff.entanglement_entropy(state, subsystem=[0, 1])
 
     # Verify workflow
-    # assert gamma.shape == (2*n_modes, 2*n_modes), "Covariance matrix should have correct size"
-    # assert correlation_matrix.shape == (n_modes, n_modes), "Correlation matrix should be correct size"
+    # assert gamma.shape == (2*n_modes,
+    #  2*n_modes), "Covariance matrix should have correct size"
+    # assert correlation_matrix.shape == (n_modes,
+    #  n_modes), "Correlation matrix should be correct size"
     # assert entanglement >= 0, "Entanglement entropy should be non-negative"
 
     # def test_kitaev_chain_workflow(self):
@@ -147,7 +146,8 @@ class TestTutorialWorkflows:
     #     assert H.shape == (2*L, 2*L), "Hamiltonian should have correct size"
     #     assert np.allclose(H, H.T.conj()), "Hamiltonian should be Hermitian"
     #     assert gap >= 0, "Energy gap should be non-negative"
-    #     assert correlation_matrix.shape == (L, L), "Correlations should have correct shape"
+    #     assert correlation_matrix.shape == (L,
+    #           L), "Correlations should have correct shape"
 
 
 class TestCrossModuleIntegration:
@@ -560,7 +560,8 @@ class TestWorkflowValidation:
     #     eigenvals_computed = np.sort(eigenvals_computed)
 
     #     # Should match analytical result
-    #     assert np.allclose(eigenvals_computed, eigenvals_analytical), "Should match analytical eigenvalues"
+    #     assert np.allclose(eigenvals_computed,
+    #         eigenvals_analytical), "Should match analytical eigenvalues"
 
     #     # Test correlation matrix
     #     gamma = ff.correlation_matrix(H)

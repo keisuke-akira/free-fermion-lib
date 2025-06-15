@@ -13,11 +13,8 @@ Test categories:
 - Operator Rotations and Transformations
 """
 
-import os
-import sys
 
 import numpy as np
-import pytest
 
 # Import the library
 import ff
@@ -250,7 +247,6 @@ class TestSymplecticOperations:
 
     def test_is_symp_canonical_form(self):
         """Test symplectic property checking for canonical form"""
-        n_sites = 2
 
         # Create a matrix in canonical symplectic form: U = [[s, t*], [t, s*]]
         s = np.array([[1, 0], [0, -1]]) / np.sqrt(2)
@@ -533,7 +529,7 @@ class TestSpecialFunctions:
         """Test matchgate condition checking"""
         # Create a 4x4 matrix that satisfies matchgate condition
         # det(inner 2x2) = det(corner 2x2)
-        M = np.array([[1, 0, 0, 2], [0, 3, 4, 0], [0, 5, 6, 0], [7, 0, 0, 8]])
+        # M = np.array([[1, 0, 0, 2], [0, 3, 4, 0], [0, 5, 6, 0], [7, 0, 0, 8]])
 
         # For this to be matchgate: det([[3,4],[5,6]]) = det([[1,2],[7,8]])
         # 3*6 - 4*5 = 18 - 20 = -2

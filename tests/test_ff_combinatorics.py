@@ -1,8 +1,9 @@
 """
 Combinatorics Tests for Free Fermion Library
 
-This module contains comprehensive tests for the combinatorial functions in ff_combinatorics.py,
-including pfaffians, hafnians, permanents, determinants, and their mathematical properties.
+This module contains comprehensive tests for the combinatorial functions in
+ff_combinatorics.py, including pfaffians, hafnians, permanents, determinants,
+and their mathematical properties.
 
 Test categories:
 - Pfaffian calculations and properties
@@ -12,10 +13,7 @@ Test categories:
 - Sign function testing
 """
 
-import itertools
 import math
-import os
-import sys
 
 import numpy as np
 import pytest
@@ -164,8 +162,8 @@ class TestPermanentFunction:
     def test_permanent_known_matrices(self):
         """Test permanent with matrices having known results"""
         # Identity matrix: permanent = 1
-        I = np.eye(3)
-        pt_val = ff.pt(I)
+        Id = np.eye(3)
+        pt_val = ff.pt(Id)
         assert np.allclose(pt_val, 1), "Permanent of identity should be 1"
 
         # All-ones matrix: permanent = n!
@@ -223,8 +221,8 @@ class TestDeterminantFunction:
     def test_determinant_known_matrices(self):
         """Test determinant with matrices having known results"""
         # Identity matrix: det = 1
-        I = np.eye(3)
-        dt_val = ff.dt(I)
+        Id = np.eye(3)
+        dt_val = ff.dt(Id)
         assert np.allclose(dt_val, 1), "Determinant of identity should be 1"
 
         # 2x2 matrix: det = ad - bc
@@ -305,8 +303,8 @@ class TestDeterminantEigenFunction:
         assert result is None, "Non-square matrix should return None"
 
         # Identity matrix
-        I = np.eye(4)
-        dt_val = ff.dt_eigen(I)
+        Id = np.eye(4)
+        dt_val = ff.dt_eigen(Id)
         assert np.allclose(dt_val, 1), "det(I) should be 1"
 
 

@@ -1,8 +1,9 @@
 """
 Graph Theory Tests for Free Fermion Library
 
-This module contains comprehensive tests for the graph theory functions in ff_graph_theory.py,
-including planar graph generation, PFO algorithm, perfect matching counting, and related algorithms.
+This module contains comprehensive tests for the graph theory functions
+in ff_graph_theory.py, including planar graph generation, PFO algorithm,
+perfect matching counting, and related algorithms.
 
 Test categories:
 - Planar graph generation and properties
@@ -11,10 +12,6 @@ Test categories:
 - Planar embedding and face detection
 - Performance and edge cases
 """
-
-import itertools
-import os
-import sys
 
 import networkx as nx
 import numpy as np
@@ -76,9 +73,8 @@ class TestPerfectMatchingAlgorithms:
 
     def test_pfo_algorithm_grid(self):
         """Test PFO algorithm on grid graphs"""
-        ###
-        ### 2x2 grid (doesn't work for some reason, needs investigation)
-        ###
+
+        # 2x2 grid (doesn't work for some reason, needs investigation)
 
         # G = nx.grid_2d_graph(2, 2)
         # count = ff.count_perfect_matchings(G)
@@ -277,6 +273,7 @@ class TestAlgorithmCorrectness:
                 f = len(faces)
 
                 euler_char = v - e + f
-                assert np.allclose(
-                    euler_char, 2
-                ), f"Euler characteristic should be 2, got {euler_char} for graph with v={v}, e={e}, f={f}"
+                if not np.allclose(euler_char, 2):
+                    print("Euler characteristic should be 2",
+                          f" got {euler_char} for graph with v={v}, e={e}, f={f}")
+                assert False, "Euler characteristic should be 2"

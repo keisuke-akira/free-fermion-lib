@@ -13,12 +13,11 @@ Test categories:
 """
 
 import io
-import sys
+
 import warnings
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import redirect_stdout
 
 import numpy as np
-import pytest
 
 # Import the library
 import ff

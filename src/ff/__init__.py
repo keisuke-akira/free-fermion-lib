@@ -30,7 +30,6 @@ from .ff_graph_theory import (
     dual_graph_H,
     faces,
     complete_face,
-    find_perfect_matchings,
     pfo_algorithm,
     compute_tree_depth,
 )

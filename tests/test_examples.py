@@ -12,8 +12,6 @@ Test categories:
 - Performance Examples (Large system benchmarks)
 """
 
-import os
-import sys
 import time
 
 import networkx as nx
@@ -161,7 +159,7 @@ class TestIntermediateExamples:
         assert np.all(np.isfinite(eigenvals)), "All eigenvalues should be finite"
 
         # Basic statistical properties
-        mean_val = np.mean(eigenvals)
+        # mean_val = np.mean(eigenvals)
         std_val = np.std(eigenvals)
 
         # print("mean particle eigenvalue:",mean_val)
@@ -379,7 +377,7 @@ class TestPerformanceExamples:
             # Time state generation
             alphas = ff.jordan_wigner_alphas(n_sites)
             start = time.time()
-            rho = ff.generate_gaussian_state(n_sites, H, alphas)
+            _ = ff.generate_gaussian_state(n_sites, H, alphas)
             state_time = time.time() - start
 
             return {

@@ -10,8 +10,6 @@ Test categories:
 - Graph Theory Applications (tutorials.rst lines 141-160)
 """
 
-import os
-import sys
 
 import networkx as nx
 import numpy as np
