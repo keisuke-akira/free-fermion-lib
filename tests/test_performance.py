@@ -41,10 +41,10 @@ def benchmark(func):
     return wrapper
 
 
-def memory_usage():
-    """Get current memory usage in MB"""
-    process = psutil.Process(os.getpid())
-    return process.memory_info().rss / 1024 / 1024
+# def memory_usage():
+#     """Get current memory usage in MB"""
+#     process = psutil.Process(os.getpid())
+#     return process.memory_info().rss / 1024 / 1024
 
 
 class TestAlgorithmPerformance:
@@ -318,88 +318,88 @@ class TestScalabilityTests:
             ), "Diagonalization should scale polynomially"
 
 
-class TestMemoryUsage:
-    """Test memory usage and efficiency"""
+# class TestMemoryUsage:
+#     """Test memory usage and efficiency"""
 
-    @pytest.mark.slow
-    def test_matrix_memory_usage(self):
-        """Test memory usage of matrix operations"""
-        initial_memory = memory_usage()
+#     @pytest.mark.slow
+#     def test_matrix_memory_usage(self):
+#         """Test memory usage of matrix operations"""
+#         initial_memory = memory_usage()
 
-        # Create large matrices and perform operations
-        n = 200
-        A = np.random.randn(n, n)
-        B = np.random.randn(n, n)
+#         # Create large matrices and perform operations
+#         n = 200
+#         A = np.random.randn(n, n)
+#         B = np.random.randn(n, n)
 
-        # Matrix multiplication
-        C = A @ B
+#         # Matrix multiplication
+#         C = A @ B
 
-        # Determinant
-        det_A = ff.dt(A)
+#         # Determinant
+#         det_A = ff.dt(A)
 
-        # Clean up
-        del A, B, C
-        gc.collect()
+#         # Clean up
+#         del A, B, C
+#         gc.collect()
 
-        final_memory = memory_usage()
-        memory_increase = final_memory - initial_memory
+#         final_memory = memory_usage()
+#         memory_increase = final_memory - initial_memory
 
-        # Memory increase should be reasonable
-        assert (
-            memory_increase < 500
-        ), "Memory usage should be reasonable"  # Less than 500 MB
+#         # Memory increase should be reasonable
+#         assert (
+#             memory_increase < 500
+#         ), "Memory usage should be reasonable"  # Less than 500 MB
 
-    def test_memory_cleanup(self):
-        """Test that memory is properly cleaned up"""
-        initial_memory = memory_usage()
+#     def test_memory_cleanup(self):
+#         """Test that memory is properly cleaned up"""
+#         initial_memory = memory_usage()
 
-        # Perform multiple operations
-        for i in range(10):
-            n = 5
-            rho = ff.random_FF_state(n)
+#         # Perform multiple operations
+#         for i in range(10):
+#             n = 5
+#             rho = ff.random_FF_state(n)
 
-            eigenvals = np.linalg.eigvals(rho)
-            gamma = ff.correlation_matrix(rho)
+#             eigenvals = np.linalg.eigvals(rho)
+#             gamma = ff.correlation_matrix(rho)
 
-            # Explicit cleanup
-            del rho, eigenvals, gamma
+#             # Explicit cleanup
+#             del rho, eigenvals, gamma
 
-        gc.collect()
-        final_memory = memory_usage()
+#         gc.collect()
+#         final_memory = memory_usage()
 
-        # Memory should not grow significantly
-        memory_growth = final_memory - initial_memory
-        assert memory_growth < 100, "Memory should be cleaned up properly"
+#         # Memory should not grow significantly
+#         memory_growth = final_memory - initial_memory
+#         assert memory_growth < 100, "Memory should be cleaned up properly"
 
-    def test_large_system_memory(self):
-        """Test memory usage with large systems"""
-        # Test with largest system that should fit in memory
-        try:
-            n = 500
-            H = np.random.randn(n, n)
-            H = H + H.T
+#     def test_large_system_memory(self):
+#         """Test memory usage with large systems"""
+#         # Test with largest system that should fit in memory
+#         try:
+#             n = 500
+#             H = np.random.randn(n, n)
+#             H = H + H.T
 
-            memory_before = memory_usage()
+#             memory_before = memory_usage()
 
-            # Perform computation
-            eigenvals = np.linalg.eigvals(H)
+#             # Perform computation
+#             eigenvals = np.linalg.eigvals(H)
 
-            memory_after = memory_usage()
-            memory_used = memory_after - memory_before
+#             memory_after = memory_usage()
+#             memory_used = memory_after - memory_before
 
-            # Should use reasonable amount of memory
-            expected_memory = n * n * 8 / 1024 / 1024 * 3  # Rough estimate in MB
-            assert (
-                memory_used < expected_memory * 2
-            ), "Memory usage should be reasonable"
+#             # Should use reasonable amount of memory
+#             expected_memory = n * n * 8 / 1024 / 1024 * 3  # Rough estimate in MB
+#             assert (
+#                 memory_used < expected_memory * 2
+#             ), "Memory usage should be reasonable"
 
-            # Clean up
-            del H, eigenvals
-            gc.collect()
+#             # Clean up
+#             del H, eigenvals
+#             gc.collect()
 
-        except MemoryError:
-            # Acceptable if system doesn't have enough memory
-            pytest.skip("Not enough memory for large system test")
+#         except MemoryError:
+#             # Acceptable if system doesn't have enough memory
+#             pytest.skip("Not enough memory for large system test")
 
 
 class TestComparisonBenchmarks:

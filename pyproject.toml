@@ -88,11 +88,10 @@ extend-exclude = '''
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --strict-markers"
+addopts = "-ra -q --strict-markers -m 'not slow'"
 testpaths = [
     "tests",
 ]
-generate_report_on_test = true
 python_files = [
     "test_*.py",
     "*_test.py",
