@@ -294,7 +294,7 @@ def build_H(n_sites, A, B=None):
     return H
 
 
-def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False):
+def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False, pure=False):
     """Generate a random free fermion state using a random Hamiltonian.
     Args:
         n_sites: The number of sites
@@ -302,6 +302,7 @@ def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False):
         seed: Random seed for reproducibility (optional)
         returnH: If True, return the generator matrix along with
                           rho (default: False)
+        pure: If True, return a pure state (default: False)
     Returns:
         A normalized free fermion state, rho. If returnH is True, also returns
         the generator matrix H.
@@ -313,6 +314,30 @@ def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False):
     H_op = build_op(
         n_sites, H, jordan_wigner_alphas(n_sites)
     )  # Build the Hamiltonian operator
+
+    if pure:
+        ## Scheme 2:
+
+        W_op = expm(-1j* H_op)  # Compute the unitary operator
+        zero_state = np.zeros((2**n_sites, 1), dtype=complex)  # Initialize zero state
+        zero_state[0, 0] = 1  # Set the first element to 1 (ground state)
+        psi = W_op @ zero_state
+
+        # check normalization of the event state
+        assert np.allclose(1, np.linalg.norm(psi))  
+
+        return psi
+
+        # ## Scheme 1
+
+        # # If pure state is requested, select a random eigenstate of density matrix
+        # [l,u]=np.linalg.eig(rho)
+        # # Select a random index within the range 1 to list_length (inclusive of list_length)
+        # random_index = np.random.randint(1, len(l))
+        # psi = u[:,random_index]
+        # assert np.allclose(1, np.linalg.norm(psi))
+
+        # return psi
 
     rho = expm(-H_op)  # Compute the FF state from the Hamiltonian
     rho = rho / np.trace(rho)  # Normalize the state density matrix
