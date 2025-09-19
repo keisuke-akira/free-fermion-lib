@@ -55,9 +55,9 @@ def _print(obj, k=9):
 
         # reset precision
         np.set_printoptions(precision=p)
-        return
-    finally:
-        return print(obj)
+    except (ValueError, TypeError):
+        # If numpy array conversion fails, just print the object
+        print(obj)
 
 
 def clean(obj, threshold=1e-6):
