@@ -295,7 +295,7 @@ def build_H(n_sites, A, B=None):
 
 
 def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False, pure=False):
-    """Generate a random free fermion state using a random Hamiltonian.
+    """Generate a random free fermion state
     Args:
         n_sites: The number of sites
         fixedN: If True, generator commutes with N_op (default: False)
@@ -307,6 +307,7 @@ def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False, pure=False)
         A normalized free fermion state, rho. If returnH is True, also returns
         the generator matrix H.
     """
+    
 
     H = random_H_generator(
         n_sites, fixedN=fixedN, seed=seed
