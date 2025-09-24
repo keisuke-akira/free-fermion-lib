@@ -126,6 +126,19 @@ class TestPrintFunction:
         output = captured_output.getvalue()
         assert "Test message" in output, "Should print the message"
 
+    def test_print_no_double_output(self):
+        """Test that _print function doesn't print twice (bug fix)"""
+        # Capture stdout
+        captured_output = io.StringIO()
+
+        with redirect_stdout(captured_output):
+            ff.ff_utils._print("Single message")
+
+        output = captured_output.getvalue()
+        # Count occurrences of the message
+        message_count = output.count("Single message")
+        assert message_count == 1, f"Message should appear exactly once, but appeared {message_count} times"
+
     def test_print_arrays(self):
         """Test printing of numpy arrays"""
         arr = np.array([1, 2, 3])

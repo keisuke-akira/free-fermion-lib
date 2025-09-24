@@ -79,6 +79,7 @@ Gaussian States and Correlation Matrices
    ff.ff_lib.compute_2corr_matrix
    ff.ff_lib.compute_algebra_S
    ff.ff_lib.correlation_matrix
+   ff.ff_lib.random_FF_rotation
    ff.ff_lib.random_FF_state
    ff.ff_lib.random_H_generator
    ff.ff_lib.kitaev_chain
