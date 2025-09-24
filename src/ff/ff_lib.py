@@ -308,8 +308,8 @@ def random_FF_rotation(n_sites, seed=None, returnH=False):
     """
     if seed is not None:
         np.random.seed(seed)
-    
-    randO = special_ortho_group.rvs(dim=2*n_sites)
+
+    randO = special_ortho_group.rvs(dim=2 * n_sites)
 
     Omega = build_Omega(n_sites)
 
@@ -317,23 +317,23 @@ def random_FF_rotation(n_sites, seed=None, returnH=False):
     assert is_symp(C), "Generated matrix is not symplectic"
 
     z = -1j
-    h = -logm(C)/z
-    H = -h/2
+    h = -logm(C) / z
+    H = -h / 2
 
-    G_op = build_op(n_sites,H,jordan_wigner_alphas(n_sites))
+    G_op = build_op(n_sites, H, jordan_wigner_alphas(n_sites))
 
     if returnH:
         return G_op  # Compute the unitary operator and return H
 
-    return expm(-1j* G_op)  # Compute the unitary operator
+    return expm(-1j * G_op)  # Compute the unitary operator
 
-    
+
 def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False, pure=False):
     """Generate a Haar random free fermion state using random symplectic rotations.
-    
+
     This function generates free-fermion states that are uniformly distributed
     over the space of free-fermion states using Haar random symplectic transformations.
-    
+
     Args:
         n_sites: The number of sites
         fixedN: If True, generator commutes with N_op (default: False)
@@ -347,24 +347,24 @@ def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False, pure=False)
     """
     if seed is not None:
         np.random.seed(seed)
-    
+
     if pure:
         # For pure states, apply Haar random unitary to vacuum state
         W_op = random_FF_rotation(n_sites, seed=seed)
         zero_state = np.zeros((2**n_sites, 1), dtype=complex)
         zero_state[0, 0] = 1  # Set the first element to 1 (ground state)
         psi = W_op @ zero_state
-        
+
         # check normalization of the pure state
         assert np.allclose(1, np.linalg.norm(psi))
-        
+
         if returnH:
             # Get the generator that produced this unitary
             H_op = random_FF_rotation(n_sites, seed=seed, returnH=True)
             return psi, H_op
         else:
             return psi
-    
+
     # For mixed states, use thermal-like distribution with Haar random Hamiltonian
     if fixedN:
         # For particle number preserving case, use simpler approach
@@ -373,12 +373,12 @@ def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False, pure=False)
     else:
         # Use Haar random rotation to generate the Hamiltonian
         H_op = random_FF_rotation(n_sites, seed=seed, returnH=True)
-    
+
     # Generate thermal state with random temperature parameter
     beta = np.random.exponential(1.0)  # Random inverse temperature
     rho = expm(-beta * H_op)
     rho = rho / np.trace(rho)  # Normalize the state density matrix
-    
+
     # Return both the normalized state density matrix and the generator matrix
     if returnH:
         return rho, H_op

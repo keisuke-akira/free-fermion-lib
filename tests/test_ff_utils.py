@@ -137,7 +137,9 @@ class TestPrintFunction:
         output = captured_output.getvalue()
         # Count occurrences of the message
         message_count = output.count("Single message")
-        assert message_count == 1, f"Message should appear exactly once, but appeared {message_count} times"
+        assert (
+            message_count == 1
+        ), f"Message should appear exactly once, but appeared {message_count} times"
 
     def test_print_arrays(self):
         """Test printing of numpy arrays"""

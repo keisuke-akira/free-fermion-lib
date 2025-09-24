@@ -553,14 +553,17 @@ class TestHaarRandomFunctions:
     def test_random_FF_rotation_basic(self):
         """Test basic properties of random_FF_rotation"""
         n_sites = 2
-        
+
         # Test that function returns a unitary matrix
         U = ff.random_FF_rotation(n_sites, seed=42)
-        
+
         # Check dimensions
         expected_dim = 2**n_sites
-        assert U.shape == (expected_dim, expected_dim), f"Should be {expected_dim}x{expected_dim}"
-        
+        assert U.shape == (
+            expected_dim,
+            expected_dim,
+        ), f"Should be {expected_dim}x{expected_dim}"
+
         # Check unitarity: U† U = I
         U_dag = U.conj().T
         identity = U_dag @ U
@@ -569,118 +572,135 @@ class TestHaarRandomFunctions:
     def test_random_FF_rotation_reproducibility(self):
         """Test that random_FF_rotation is reproducible with seed"""
         n_sites = 2
-        
+
         U1 = ff.random_FF_rotation(n_sites, seed=123)
         U2 = ff.random_FF_rotation(n_sites, seed=123)
-        
+
         assert np.allclose(U1, U2), "Should be reproducible with same seed"
 
     def test_random_FF_rotation_returnH(self):
         """Test random_FF_rotation with returnH=True"""
         n_sites = 2
-        
+
         H_op = ff.random_FF_rotation(n_sites, seed=42, returnH=True)
-        
+
         # Check dimensions
         expected_dim = 2**n_sites
-        assert H_op.shape == (expected_dim, expected_dim), f"Hamiltonian should be {expected_dim}x{expected_dim}"
-        
+        assert H_op.shape == (
+            expected_dim,
+            expected_dim,
+        ), f"Hamiltonian should be {expected_dim}x{expected_dim}"
+
         # Check that it's Hermitian
         assert np.allclose(H_op, H_op.conj().T), "Hamiltonian should be Hermitian"
 
     def test_random_FF_state_basic(self):
         """Test basic properties of random_FF_state"""
         n_sites = 2
-        
+
         # Test mixed state (default)
         rho = ff.random_FF_state(n_sites, seed=42)
-        
+
         # Check dimensions
         expected_dim = 2**n_sites
-        assert rho.shape == (expected_dim, expected_dim), f"State should be {expected_dim}x{expected_dim}"
-        
+        assert rho.shape == (
+            expected_dim,
+            expected_dim,
+        ), f"State should be {expected_dim}x{expected_dim}"
+
         # Check normalization
         assert np.allclose(np.trace(rho), 1.0), "State should be normalized"
-        
+
         # Check that it's positive semidefinite
         eigenvals = np.linalg.eigvals(rho)
         assert np.all(eigenvals >= -1e-10), "State should be positive semidefinite"
-        
+
         # Check that it's Hermitian
         assert np.allclose(rho, rho.conj().T), "State should be Hermitian"
 
     def test_random_FF_state_pure(self):
         """Test random_FF_state with pure=True"""
         n_sites = 2
-        
+
         psi = ff.random_FF_state(n_sites, pure=True, seed=42)
-        
+
         # Check dimensions
         expected_dim = 2**n_sites
         assert psi.shape == (expected_dim, 1), f"Pure state should be {expected_dim}x1"
-        
+
         # Check normalization
         assert np.allclose(np.linalg.norm(psi), 1.0), "Pure state should be normalized"
 
     def test_random_FF_state_returnH(self):
         """Test random_FF_state with returnH=True"""
         n_sites = 2
-        
+
         # Test mixed state with returnH
         rho, H_op = ff.random_FF_state(n_sites, returnH=True, seed=42)
-        
+
         # Check that both are returned
         expected_dim = 2**n_sites
         assert rho.shape == (expected_dim, expected_dim), "State should be correct size"
-        assert H_op.shape == (expected_dim, expected_dim), "Hamiltonian should be correct size"
-        
+        assert H_op.shape == (
+            expected_dim,
+            expected_dim,
+        ), "Hamiltonian should be correct size"
+
         # Check normalization
         assert np.allclose(np.trace(rho), 1.0), "State should be normalized"
-        
+
         # Check that Hamiltonian is Hermitian
         assert np.allclose(H_op, H_op.conj().T), "Hamiltonian should be Hermitian"
 
     def test_random_FF_state_pure_returnH(self):
         """Test random_FF_state with pure=True and returnH=True"""
         n_sites = 2
-        
+
         psi, H_op = ff.random_FF_state(n_sites, pure=True, returnH=True, seed=42)
-        
+
         # Check dimensions
         expected_dim = 2**n_sites
         assert psi.shape == (expected_dim, 1), f"Pure state should be {expected_dim}x1"
-        assert H_op.shape == (expected_dim, expected_dim), f"Hamiltonian should be {expected_dim}x{expected_dim}"
-        
+        assert H_op.shape == (
+            expected_dim,
+            expected_dim,
+        ), f"Hamiltonian should be {expected_dim}x{expected_dim}"
+
         # Check normalization
         assert np.allclose(np.linalg.norm(psi), 1.0), "Pure state should be normalized"
 
     def test_random_FF_state_fixedN(self):
         """Test random_FF_state with fixedN=True"""
         n_sites = 2
-        
+
         rho = ff.random_FF_state(n_sites, fixedN=True, seed=42)
-        
+
         # Check basic properties
         expected_dim = 2**n_sites
-        assert rho.shape == (expected_dim, expected_dim), f"State should be {expected_dim}x{expected_dim}"
+        assert rho.shape == (
+            expected_dim,
+            expected_dim,
+        ), f"State should be {expected_dim}x{expected_dim}"
         assert np.allclose(np.trace(rho), 1.0), "State should be normalized"
         assert np.allclose(rho, rho.conj().T), "State should be Hermitian"
 
     def test_random_FF_state_reproducibility(self):
         """Test that random_FF_state is reproducible with seed"""
         n_sites = 2
-        
+
         rho1 = ff.random_FF_state(n_sites, seed=123)
         rho2 = ff.random_FF_state(n_sites, seed=123)
-        
+
         assert np.allclose(rho1, rho2), "Should be reproducible with same seed"
 
     def test_random_FF_state_different_seeds(self):
         """Test that different seeds produce different states"""
         n_sites = 2
-        
+
         rho1 = ff.random_FF_state(n_sites, seed=123)
         rho2 = ff.random_FF_state(n_sites, seed=456)
-        
+
         # States should be different (with high probability)
-        assert not np.allclose(rho1, rho2, atol=1e-10), "Different seeds should produce different states"
+        assert not np.allclose(
+            rho1, rho2, atol=1e-10
+        ), "Different seeds should produce different states"
