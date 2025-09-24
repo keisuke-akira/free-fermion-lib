@@ -342,8 +342,8 @@ def random_FF_state(n_sites, fixedN=False, seed=None, returnH=False, pure=False)
                           rho (default: False)
         pure: If True, return a pure state (default: False)
     Returns:
-        A normalized Haar random free fermion state, rho. If returnH is True, also returns
-        the generator matrix H.
+        A normalized Haar random free fermion state, rho. If returnH is True, also 
+        returns the generator matrix H.
     """
     if seed is not None:
         np.random.seed(seed)
